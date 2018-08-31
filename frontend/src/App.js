@@ -3,6 +3,9 @@ import MapComponent from './components/map';
 import SimpleMap from './components/google_map';
 import ChatBox from './components/chat_box';
 import styled from 'styled-components';
+import ModalHelper from './helpers/modal-helper';
+
+const ModalStore = ModalHelper.ModalStore;
 
 const Layout = styled.section`
   display: flex;
@@ -17,7 +20,16 @@ const Layout = styled.section`
 `
 
 class App extends Component {
+  constructor(props) {
+    super(props);
+    this.state = { modal: false };
+    ModalStore.subscribe(() => {
+      this.setState({ modal: ModalStore.getState() })
+    })
+  }
+
   render() {
+    console.log(this.state.modal)
     return (
       <Layout>
         <ChatBox />
