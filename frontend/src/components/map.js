@@ -6,14 +6,13 @@ const Map = ReactMapboxGl({
 
 // in render()
 const main_center = [100.610275, 14.797778];
+const size = {height: "100vh", width: "50vw"};
+const mystyle = "mapbox://styles/mapbox/streets-v9";
 export default (prop) => {
     return (
         <Map
-            style="mapbox://styles/mapbox/streets-v9"
-            containerStyle={{
-                height: "100vh",
-                width: "50vw"
-            }}
+            style={mystyle}
+            containerStyle={size}
             center={main_center}>
         <Layer
         type="symbol"
