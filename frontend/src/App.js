@@ -1,5 +1,6 @@
 import React, { Component } from 'react';
 import MapComponent from './components/map';
+import SimpleMap from './components/google_map';
 import ChatBox from './components/chat_box';
 import styled from 'styled-components';
 
@@ -20,8 +21,11 @@ class App extends Component {
     return (
       <Layout>
         <ChatBox />
-        <section>
-          <MapComponent />
+        <section style={{
+          height: "100vh",
+          width: "70vw"
+        }}>
+          <SimpleMap />
         </section>
       </Layout>
     );
