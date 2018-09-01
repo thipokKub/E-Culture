@@ -12,6 +12,7 @@ const { ModalStore } = ModalHelper;
 
 const Layout = styled.section`
   display: flex;
+  overflow: hidden;
 
   ${props => props.scollable ? "overflow: hidden;" : ""}
 
@@ -49,9 +50,9 @@ const Masked = styled.div`
 class App extends Component {
   constructor(props) {
     super(props);
-    this.state = { modal: false };
+    this.state = { isOpen: false };
     ModalStore.subscribe(() => {
-      this.setState({ modal: ModalStore.getState() })
+      this.setState({ ...ModalStore.getState() })
     })
   }
 
@@ -67,9 +68,12 @@ class App extends Component {
             <ShelterMap />
           </section>
         </Layout>,
-        this.state.modal && (
+        this.state.isOpen && (
           <Masked key="backdrop">
-            <Modal key="modal" />
+            <Modal
+              key="modal"
+              {...this.state.item}
+            />
           </Masked>
         )
       ]
