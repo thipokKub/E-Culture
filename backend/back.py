@@ -17,6 +17,10 @@ app = Flask(__name__, template_folder="build", static_folder="build/static")
 CORS(app)
 recommender = recommendation.recommender()
 
+# def getPicture(input_id):
+#     results = map_media[mep_media[id] == input_id]
+    
+# model = Doc2Vec.load('doc2vec_model')
 
 def cleanText(text):
     text = re.sub('[^ก-๙\s0-9]','',text)
@@ -50,7 +54,7 @@ def search():
     results = recommender(text)
 
     selected = dataset[dataset["id"].isin(results)]
-    # selected["description"] = selected['description'].apply(lambda des : cleanText(des))
+    selected["description"] = selected['description'].apply(lambda des : cleanText(des))
     selected['media'] = selected['id'].apply(lambda id : map_id_to_media[id])
     selected['category'] = selected['id'].apply(lambda id : map_id_to_category[id])
 
@@ -109,6 +113,7 @@ def recommend():
     ret['category'] = ret['id'].apply(lambda id : map_id_to_category[id])
     obj = json.loads(ret.to_json(orient='records', force_ascii=False))[:topn]
     return jsonify(obj), 200
+
 
 if __name__ == "__main__":    
     app.run(host="0.0.0.0",debug=True)
