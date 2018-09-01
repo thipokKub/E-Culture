@@ -3,7 +3,8 @@ import styled from 'styled-components';
 
 const colorTemplate = {
     "robot": "#1DAFEC",
-    "me": "#9ABF55"
+    "me": "#9ABF55",
+    "clickable": "#5ECCE9"
 }
 
 const BubbleStyled = styled.article`
@@ -60,12 +61,13 @@ const BubbleStyled = styled.article`
     }
 `;
 
-const Bubble = ({ speaker, text, ...props}) => {
+const Bubble = ({ speaker, text, clickable, ...props}) => {
+    speaker = clickable ? "clickable" : speaker;
     return (
         <BubbleStyled
             direction={speaker === "me" ? "left" : "right"}
             bgColor={colorTemplate[speaker]}
-            clickable={speaker === "robot"}
+            clickable={clickable}
             {...props}
         >
             {text}
