@@ -22,11 +22,11 @@ const BubbleStyled = styled.article`
     box-shadow: 2px 2px 3px rgba(0, 0, 0, 0.3);
 
     &:hover {
-        box-shadow: 4px 3px 7px rgba(0, 0, 0, 0.3);
+        ${props => props.clickable && "box-shadow: 4px 3px 7px rgba(0, 0, 0, 0.3);"}
     }
 
     &:active {
-        box-shadow: none;
+        ${props => props.clickable && "box-shadow: none;"}
     }
 
     &::before {
@@ -60,13 +60,15 @@ const BubbleStyled = styled.article`
     }
 `;
 
-const Bubble = (props) => {
+const Bubble = ({ speaker, text, ...props}) => {
     return (
         <BubbleStyled
-            direction={props.speaker === "me" ? "left" : "right"}
-            bgColor={colorTemplate[props.speaker]}
+            direction={speaker === "me" ? "left" : "right"}
+            bgColor={colorTemplate[speaker]}
+            clickable={speaker === "robot"}
+            {...props}
         >
-            {props.text}
+            {text}
         </BubbleStyled>
     );
 }

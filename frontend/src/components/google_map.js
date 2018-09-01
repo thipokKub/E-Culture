@@ -2,7 +2,7 @@ import React, { Component } from 'react';
 import GoogleMapReact from 'google-map-react';
 
 const AnyReactComponent = ({ text }) => <div>{text}</div>;
-const API_KEY = "AIzaSyAAtr_wr6HYsWNdLAzcOp_ax1dvaRD5xaA";
+const API_KEY = "";
 
 class SimpleMap extends Component {
   static defaultProps = {
