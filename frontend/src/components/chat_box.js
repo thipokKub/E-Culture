@@ -6,7 +6,7 @@ import TextareaAutosize from 'react-autosize-textarea';
 import axios from 'axios';
 
 const { ModalStore, types, ModalTypes } = ModalHelper;
-const TARGET_URL = `http://192.168.43.170:5000/api`
+const TARGET_URL = `http://172.20.10.2:5000/api`
 
 const minRows = 2;
 const magicNumber = 41; // This number is the final textarea height after "reset" -> set button height
