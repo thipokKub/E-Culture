@@ -17,10 +17,6 @@ app = Flask(__name__, template_folder="build", static_folder="build/static")
 CORS(app)
 recommender = recommendation.recommender()
 
-def getPicture(input_id):
-    results = map_media[mep_media[id] == input_id]
-    
-model = Doc2Vec.load('doc2vec_model')
 
 def cleanText(text):
     text = re.sub('[^ก-๙\s0-9]','',text)
@@ -45,7 +41,7 @@ def classifyText():
     return jsonify({'intent':intent, 'text':res_text}) , 200
 
 
-@app.route("/app/search", methods=["POST"])
+@app.route("/api/search", methods=["POST"])
 def search():
     data = json.loads(request.data.decode('utf-8'))
     text = data['text']
@@ -65,7 +61,7 @@ def search():
 @app.route("/api/getDescription", methods=["POST"])
 def describe():
     title = json.loads(request.data.decode('utf-8'))['title']
-    ret = data[data["title"] == title].to_json(orient='records', force_ascii=False)
+    ret = dataset[dataset["title"] == title]
     ret['media'] = ret['id'].apply(lambda id : map_id_to_media[id])
     ret['category'] = ret['id'].apply(lambda id : map_id_to_category[id])
     obj = json.loads(ret.to_json(orient='records', force_ascii=False))     
