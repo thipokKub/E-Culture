@@ -41,7 +41,6 @@ const ChatBoxStyled = styled.section`
     padding-bottom: 50px;
     position: relative;
     overflow-y: scroll;
-
     #Scroll-Chat {
         display: flex;
         flex: 0 1 90%;
@@ -55,12 +54,9 @@ const ChatTextStyled = styled.section`
     position: absolute;
     bottom: 0;
     width: 100%;
-
     display: flex;
     align-items: center;
-
     box-shadow: -5px 0px 5px rgba(0, 0, 0, 0.3);
-
     textarea {
         box-sizing: border-box;
         width: 100%;
@@ -69,7 +65,6 @@ const ChatTextStyled = styled.section`
         box-shadow: none;
         padding: 7px;
     }
-
     button {
         min-width: 50px;
         box-sizing: border-box;
@@ -82,11 +77,9 @@ const ChatTextStyled = styled.section`
         color: #FFF;
         height: 100%;
         outline: none;
-
         &:hover {
             filter: brightness(1.2);
         }
-
         &:active {
             filter: brightness(0.8);
         }
@@ -159,6 +152,27 @@ class ChatBox extends Component {
     onDetectIntention = async (str) => {
         // Assume we detect intention
         try {
+            if (this.state.state === 'search'){
+                console.log('searching')
+                return axios.post(`${TARGET_URL}/search`,{text:str}).then((res)=>{
+                    let search_list = res.data
+                    this.setState({ state: 'none' }, () => {
+                        ModalStore.dispatch({
+                            type: types.SET,
+                            payload: {
+                                type: ModalTypes.LIST,
+                                data: this.onRemapped(search_list)
+                            }
+                        });
+                        const Text = `ได้ตามนี้นะคะ
+                                    ${search_list.map((it, idx) => `${idx + 1}. ${it.title} ที่ จ.${it.province}
+                                    `).join("")}`;
+    
+                        this.onAddText(Text, "robot", true, this.onRemapped(search_list))
+                    }) 
+                })
+            }
+
             if(this.state.state === "asking") {
                 this.setState({
                     state: "none"
@@ -216,6 +230,9 @@ class ChatBox extends Component {
                     state: "asking"
                 })
                 return this.onAddText("ใส่ชื่อได้เลยค่ะ", "robot")
+            } else if (intention === "search"){
+                this.setState({state : 'search'})
+                return this.onAddText("อยากจะรู้อะไรหรอคะ", "robot")
             } else if (intention === "recommend") {
                 try {
                     this.onAddText("รอแปปนะคะ", "robot")
@@ -249,7 +266,7 @@ class ChatBox extends Component {
                     }
                 } catch (e) {
                     return this.onAddText("ขอโทษค่ะ ตอนนี้ไม่สามารถใส่ตำแหน่งปัจจุบันได้ กรุณาลองใหม่อีกครั้งค่ะ", "robot")
-                }
+                } 
             }
             this.onAddText(`Detected intention: ${intention}`, "robot");
 
@@ -312,7 +329,6 @@ class ChatBox extends Component {
         1. แนะนำสถานที่ท่องเที่ยว
         2. ขอเส้นทางคร่าวๆ
         3. ขอรายละเอียดเพิ่มเติมเกี่ยวกับสถานที่ต่างๆ
-
         ส่วนความสามารถอื่นๆจะตามมาทีหลังนะคะ`, "robot", false);
     }
 
