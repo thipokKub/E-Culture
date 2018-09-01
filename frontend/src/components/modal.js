@@ -3,6 +3,10 @@ import styled from 'styled-components';
 import ModalHelper from '../helpers/modal-helper';
 import OutsideClickHandler from 'react-outside-click-handler';
 import CrossBar from './close_btn';
+import { Chip,Avatar } from '@material-ui/core';
+import { GridList,GridListTile } from '@material-ui/core';
+
+
 const { ModalStore, types } = ModalHelper;
 
 const ModalStyled = styled.section`
@@ -151,17 +155,18 @@ class ListDescription extends Component {
 
     render() {
         const { listItem } = this.props;
+        console.log(listItem)
         const selectedItem = listItem[this.state.index];
 
         return (
             <ListDescriptionStyled>
                 <div className="col">
-                    <section className="list">
+                    <section className="list" style={{overflowX:'scroll',overflowY:'scroll'}}>
                         {
                             listItem.map((it, idx) => {
                                 return (
                                     <article key={idx} onClick={this.onClickIdx(idx)} className={idx === this.state.index ? "active" : ""}>
-                                        <img alt="thumbnail" src="https://via.placeholder.com/100x100" />
+                                        <img style={{height:'100px',width:'100px'}} alt="thumbnail" src={it.media[0]['thumb_pic']} />
                                         <span>{it.title}</span>
                                     </article>
                                 );
@@ -172,7 +177,17 @@ class ListDescription extends Component {
                 <div className="col grow">
                     <section className="info">
                         <h2>{selectedItem.title}</h2>
-                        <img alt="full-img" src="https://via.placeholder.com/350x350" />
+                        <div style={{display: 'flex',flexWrap: 'wrap',justifyContent: 'space-around',overflow: 'hidden',}}>
+                            <GridList style={{flexWrap: 'nowrap', transform: 'translateZ(0)',}}>
+                                {selectedItem.media.map((media,idx)=>{
+                                    return(
+                                        <GridListTile>
+                                            <img alt="big_pic" src={media['big_pic']}/>
+                                        </GridListTile>
+                                    )
+                                })}
+                            </GridList>
+                        </div>
                         <p>{selectedItem.description}</p>
                         <div>
                             <div>
@@ -186,9 +201,18 @@ class ListDescription extends Component {
                             </div>
                         </div>
                         <div>
-                            <b>ประเภท</b>&nbsp;{selectedItem.category}<br />
-                            <b>source</b>&nbsp;{selectedItem.source}
-                            <b>url</b>&nbsp;{selectedItem.url}
+                            {/* <b>ประเภท : </b>&nbsp;{selectedItem.category}<br /> */}
+                            <b>source : </b>&nbsp;{selectedItem.source}
+                            <br/>
+                            <b>url : </b> <a href={selectedItem.url}>{selectedItem.url}</a>
+                        </div>
+                        <div style={{height:'20px'}}/>
+                        <div style={{display:'flex'}}>
+                            {selectedItem.category.map((cat,idx)=>{
+                                return(
+                                    <Chip key={"cat"+idx} label={cat}/>
+                                )
+                            })}
                         </div>
                     </section>
                 </div>
