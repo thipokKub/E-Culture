@@ -123,14 +123,18 @@ class ChatBox extends Component {
             const response = await new Promise((res) => {
                 setTimeout(() => {
                     // Assume responses is always an array
-                    const listItem = Array.from(new Array(0).keys()).map((idx) => (
+                    const listItem = Array.from(new Array(4).keys()).map((idx) => (
                         {
                             ...exampleObj,
                             title: `${exampleObj.title} ${idx}`,
-                            lat: Math.round(10000000 * (exampleObj.lat + 3 * (Math.random() - 0.5))) / 10000000,
-                            lon: Math.round(10000000 * (exampleObj.lon + 3 * (Math.random() - 0.5))) / 10000000
+                            lat: Math.round(10000 * (exampleObj.lat + 3 * (Math.random() - 0.5))) / 10000,
+                            lon: Math.round(10000 * (exampleObj.lon + 3 * (Math.random() - 0.5))) / 10000
                         }
-                    )).concat([{ ...exampleObj }])
+                    )).concat([{
+                        ...exampleObj,
+                        lat: Math.round(10000 * (exampleObj.lat)) / 10000,
+                        lon: Math.round(10000 * (exampleObj.lon)) / 10000
+                    }])
 
                     res({
                         message: "Lorem ipsum stuff here",
