@@ -92,7 +92,7 @@ const ListDescriptionStyled = styled.section`
             max-width: 300px;
             min-width: 300px;
             height: 100%;
-            max-height: 820px;
+            max-height: 1050px;
             overflow-y: scroll;
 
             > article {

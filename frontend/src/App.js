@@ -54,10 +54,23 @@ class App extends Component {
     super(props);
     this.state = {
       isOpen: false,
-      modal: null
+      modal: null,
+      pointPos: {
+        lat: -1,
+        lon: -1
+      }
     };
     ModalStore.subscribe(() => {
       this.setState({ ...ModalStore.getState() })
+    })
+  }
+
+  onChangePos = (e) => {
+    this.setState({
+      pointPos: {
+        lat: e.latLng.lat(),
+        lon: e.latLng.lng()
+      }
     })
   }
 
@@ -75,15 +88,20 @@ class App extends Component {
     return (
       [
         <Layout key="layout" scollable={this.state.isOpem}>
-          <ChatBox />
+          <ChatBox
+            pointPos={this.state.pointPos}
+          />
           <section style={{
             height: "100vh",
             width: "70vw"
           }}>
-            <MapWithADirectionsRenderer start={{lat: 18.6565, lon: 98.9627}} dest={{lat: 18.6176, lon: 98.7791}}/>
-            {/* <ShelterMap
+            {
+              // <MapWithADirectionsRenderer start={{lat: 18.6565, lon: 98.9627}} dest={{lat: 18.6176, lon: 98.7791}}/>
+            }
+            <ShelterMap
               data={listItem}
-            /> */}
+              onChangePos={this.onChangePos}
+            />
           </section>
         </Layout>,
         this.state.isOpen && (

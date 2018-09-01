@@ -70,7 +70,9 @@ const Bubble = ({ speaker, text, clickable, ...props}) => {
             clickable={clickable}
             {...props}
         >
-            {text}
+            {text.split("\n").map((it, idx) => (
+                <span key={idx}>{it}<br /></span>
+            ))}
         </BubbleStyled>
     );
 }

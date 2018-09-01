@@ -3,8 +3,10 @@ import Bubble from './chat_bubble';
 import styled from 'styled-components';
 import ModalHelper from '../helpers/modal-helper';
 import TextareaAutosize from 'react-autosize-textarea';
+import axios from 'axios';
 
 const { ModalStore, types, ModalTypes } = ModalHelper;
+const TARGET_URL = `http://192.168.43.170:5000/api`
 
 const minRows = 2;
 const magicNumber = 41; // This number is the final textarea height after "reset" -> set button height
@@ -22,6 +24,12 @@ const exampleObj = {
     "title": "นางจันทร์ดี      อินทพันธ์  ",
     "url": "http://123.242.145.13/album/16119"
 }
+
+var decodeHTML = function (html) {
+    var txt = document.createElement('textarea');
+    txt.innerHTML = html;
+    return txt.value;
+};
 
 const ChatBoxStyled = styled.section`
     width: 30vw;
@@ -85,6 +93,10 @@ const ChatTextStyled = styled.section`
     }
 `
 
+function getRandomInt(min, max) {
+    return Math.floor(Math.random() * (max - min)) + min;
+}
+
 class ChatBox extends Component {
     constructor(props) {
         super(props);
@@ -93,11 +105,24 @@ class ChatBox extends Component {
             text: "",
             history: [{
                 speaker: "robot",
-                text: "สวัสดีค่ะ บลาๆๆ เป็นข้อความต้อนรับอ่ะ อิๆ",
-            }, {
-                speaker: "robot",
-                text: "ท่านสามารถสอบถาม บลาๆๆ ได้"
+                text: `สวัสดีค่ะ ฉันชื่อ <insert name here>
+                ยินดีที่ได้รู้จักค่าาาา
+                ฉันเป็นบ๊อทที่สามารถสอบถามข้อมูลเกี่ยวกับสถานที่ landmark ต่างๆ ภายในประเทศไทยได้
+                ก็ขอฝากเนื้อฝากตัวด้วยนะคะ`,
             }]
+        }
+    }
+
+    delayedFunc = async (callback, timeout) => {
+        try {
+            return await new Promise((res) => {
+                setTimeout(() => {
+                    callback();
+                    res(true)
+                }, timeout)
+            })
+        } catch(e) {
+            console.error(e);
         }
     }
 
@@ -108,51 +133,118 @@ class ChatBox extends Component {
             const elem = document.getElementById("Scroll-Chat");
             elem.parentElement.scrollTop = elem.scrollHeight;
         })
+        
+        const _this = this;
+
+        (async () => {
+            try {
+                await _this.delayedFunc(() => _this.onAddText(`เออ ลืมบอกค่ะ`, "robot", false), 1000);
+                await _this.delayedFunc(() => _this.onResponseHelp(), 2000);
+            } catch (e) {
+                console.error(e);
+            }
+        })();
     }
 
     onDetectIntention = async (str) => {
         // Assume we detect intention
         try {
-            const intention = await new Promise((res) => {
-                setTimeout(() => {
-                    res("recommendation")
-                }, 200);
-            });
-            this.onAddText(`Detected intention: ${intention}`, "robot")
 
-            const response = await new Promise((res) => {
-                setTimeout(() => {
-                    // Assume responses is always an array
-                    const listItem = Array.from(new Array(4).keys()).map((idx) => (
-                        {
-                            ...exampleObj,
-                            title: `${exampleObj.title} ${idx}`,
-                            lat: Math.round(10000 * (exampleObj.lat + 3 * (Math.random() - 0.5))) / 10000,
-                            lon: Math.round(10000 * (exampleObj.lon + 3 * (Math.random() - 0.5))) / 10000
-                        }
-                    )).concat([{
-                        ...exampleObj,
-                        lat: Math.round(10000 * (exampleObj.lat)) / 10000,
-                        lon: Math.round(10000 * (exampleObj.lon)) / 10000
-                    }])
+            const resp = (await axios.post(`${TARGET_URL}/getIntention`, {
+                "text": str
+            })).data
 
-                    res({
-                        message: "Lorem ipsum stuff here",
-                        data: listItem
-                    })
+            const intention = resp.intent;
 
-                    ModalStore.dispatch({
-                        type: types.SET,
-                        payload: {
-                            type: ModalTypes.LIST,
-                            data: listItem
-                        }
-                    })
-                }, 500);
-            });
-            this.onAddText(`${response.message}`, "robot", true, response.data)
+            if(intention === "others") {
+                const randomOthers = [`ขอโทษค่ะ พอดีช่วงนี้นอนหน่อย
+                    เลยไม่ค่อยเข้าใจ ลองเปลี่ยนคำนะคะ`, `คือยังไงเหรอคะ ขออีกรอบค่ะ`, `แปลว่าอะไรเหรอคะ?`]
+                return this.onAddText(randomOthers[getRandomInt(0, randomOthers.length)], "robot")
+            } else if(intention === "greeting") {
+                const randomGreeting = [`สวัสดีค่ะ มีอะไรจะสอบถามอะไรรึเปล่าคะ?`,
+                    `สวีดัส สวัสดีค่ะ มีอะไรให้ช่วยรึเปล่าคะ?`, `สวัสดีค่ะ สบายดีใช่ไหมคะ ตอนนี้อยากทราบอะไรรึเปล่าคะ?`]
+                return this.onAddText(randomGreeting[getRandomInt(0, randomGreeting.length)], "robot")
+            } else if (intention === "functionality") {
+                if(getRandomInt(0, 10) < 1) {
+                    return this.onResponseHelp();
+                }
+                return this.onResponseHelp(resp.text);
+            } else if (intention === "recommend") {
+                try {
+                    this.onAddText("รอแปปนะคะ", "robot")
+                    if (navigator.geolocation) {
+                        navigator.geolocation.getCurrentPosition(async (position) => {
+                            const myLocation = this.props.pointPos && this.props.pointPos.lat !== -1 ? this.props.pointPos : { lat: position.coords.latitude, lon: position.coords.longitude };
+
+                            try {
+                                const resp2 = (await axios.post(`${TARGET_URL}/getRecommend`, myLocation)).data.map((it) => ({
+                                    ...it,
+                                    description: decodeHTML(decodeURIComponent(it.description)),
+                                    lat: Math.round(10000 * Number(it.lat))/ 10000,
+                                    lon: Math.round(10000 * Number(it.lon))/ 10000
+                                }));
+                                ModalStore.dispatch({
+                                    type: types.SET,
+                                    payload: {
+                                        type: ModalTypes.LIST,
+                                        data: resp2
+                                    }
+                                });
+    
+                                const Text = `ได้ตามนี้นะคะ
+                                ${resp2.map((it, idx) => `${idx + 1}. ${it.title} ที่ จ.${it.province}
+                                `).join("")}`;
+    
+                                return this.onAddText(Text, "robot", true, resp2)
+                            } catch(e) {
+                                console.error(e);
+                                throw Error("Something Wrong")
+                            }
+                            
+                        });
+                    } else {
+                        return this.onAddText("ขอโทษค่ะ ตอนนี้ไม่สามารถใส่ตำแหน่งปัจจุบันได้ กรุณาลองใหม่อีกครั้งค่ะ", "robot")
+                    }
+                } catch (e) {
+                    return this.onAddText("ขอโทษค่ะ ตอนนี้ไม่สามารถใส่ตำแหน่งปัจจุบันได้ กรุณาลองใหม่อีกครั้งค่ะ", "robot")
+                }
+            }
+            this.onAddText(`Detected intention: ${intention}`, "robot");
+
+            // const response = await new Promise((res) => {
+            //     setTimeout(() => {
+            //         // Assume responses is always an array
+            //         const listItem = Array.from(new Array(4).keys()).map((idx) => (
+            //             {
+            //                 ...exampleObj,
+            //                 title: `${exampleObj.title} ${idx}`,
+            //                 lat: Math.round(10000 * (exampleObj.lat + 3 * (Math.random() - 0.5))) / 10000,
+            //                 lon: Math.round(10000 * (exampleObj.lon + 3 * (Math.random() - 0.5))) / 10000
+            //             }
+            //         )).concat([{
+            //             ...exampleObj,
+            //             lat: Math.round(10000 * (exampleObj.lat)) / 10000,
+            //             lon: Math.round(10000 * (exampleObj.lon)) / 10000
+            //         }])
+
+            //         res({
+            //             message: "Lorem ipsum stuff here",
+            //             data: listItem
+            //         })
+
+            //         ModalStore.dispatch({
+            //             type: types.SET,
+            //             payload: {
+            //                 type: ModalTypes.LIST,
+            //                 data: listItem
+            //             }
+            //         })
+            //     }, 500);
+            // });
+            // this.onAddText(`${response.message}`, "robot", true, response.data)
         } catch (e) {
-            this.onAddText("ขอโทษค่ะ ตอนนี้ไม่สามารถต่อกับเซิฟเวอร์ได้ กรุณาลองใไม่อีกครั้ง", "robot")
+            console.error(e)
+            this.onAddText("ขอโทษค่ะ ตอนนี้ไม่สามารถต่อกับเซิฟเวอร์ได้ กรุณาลองใหม่อีกครั้ง", "robot")
         }
     }
 
@@ -171,6 +263,15 @@ class ChatBox extends Component {
             const elem = document.getElementById("Scroll-Chat");
             elem.parentElement.scrollTop = elem.scrollHeight;
         })
+    }
+
+    onResponseHelp = (head =`ตอนนี้สามารถสอบถามเกี่ยวกับ`) => {
+        this.onAddText(`${head}
+        1. แนะนำสถานที่ท่องเที่ยว
+        2. ขอเส้นทางคร่าวๆ
+        3. ขอรายละเอียดเพิ่มเติมเกี่ยวกับสถานที่ต่างๆ
+
+        ส่วนความสามารถอื่นๆจะตามมาทีหลังนะคะ`, "robot", false);
     }
 
     onMouseClickHandler = (it) => {
@@ -239,7 +340,7 @@ class ChatBox extends Component {
                         onChange={(e) => {
                             if (e.target.value.indexOf("\n") !== -1) {
                                 if (e.target.value.length > 1) {
-                                    this.onAddText(e.target.value);
+                                    this.onAddText(e.target.value.replace(/\n/gi, ''));
                                 }
                                 e.target.value = "";
                                 this.setState({
