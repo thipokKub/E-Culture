@@ -122,17 +122,38 @@ class ChatBox extends Component {
 
             const response = await new Promise((res) => {
                 setTimeout(() => {
-                    res({message: "Lorem ipsum stuff here"})
+                    // Assume responses is always an array
+                    const listItem = Array.from(new Array(0).keys()).map((idx) => (
+                        {
+                            ...exampleObj,
+                            title: `${exampleObj.title} ${idx}`,
+                            lat: Math.round(10000000 * (exampleObj.lat + 3 * (Math.random() - 0.5))) / 10000000,
+                            lon: Math.round(10000000 * (exampleObj.lon + 3 * (Math.random() - 0.5))) / 10000000
+                        }
+                    )).concat([{ ...exampleObj }])
+
+                    res({
+                        message: "Lorem ipsum stuff here",
+                        data: listItem
+                    })
+
+                    ModalStore.dispatch({
+                        type: types.SET,
+                        payload: {
+                            type: ModalTypes.LIST,
+                            data: listItem
+                        }
+                    })
                 }, 500);
             });
-            this.onAddText(`${response.message}`, "robot", true)
+            this.onAddText(`${response.message}`, "robot", true, response.data)
         } catch (e) {
             this.onAddText("ขอโทษค่ะ ตอนนี้ไม่สามารถต่อกับเซิฟเวอร์ได้ กรุณาลองใไม่อีกครั้ง", "robot")
         }
     }
 
-    onAddText = (str, speaker="me", clickable=false) => {
-        if(speaker == "me") {
+    onAddText = (str, speaker="me", clickable=false, data = undefined) => {
+        if(speaker === "me") {
             this.onDetectIntention(str)
         }
         this.setState({
@@ -140,12 +161,36 @@ class ChatBox extends Component {
                 speaker: speaker,
                 text: str,
                 clickable: clickable,
-                data: { ...exampleObj }
+                data: data
             }])
         }, () => {
             const elem = document.getElementById("Scroll-Chat");
             elem.parentElement.scrollTop = elem.scrollHeight;
         })
+    }
+
+    onMouseClickHandler = (it) => {
+        return () => {
+            (it.clickable) && ModalStore.dispatch({
+                type: types.SETnOPEN,
+                payload: {
+                    type: ModalTypes.LIST,
+                    data: [...it.data]
+                }
+            });
+        }
+    }
+
+    onMouseEnterHandler = (it) => {
+        return () => {
+            (it.clickable) && ModalStore.dispatch({
+                type: types.SET,
+                payload: {
+                    type: ModalTypes.LIST,
+                    data: [...it.data]
+                }
+            });
+        }
     }
 
     render() {
@@ -166,13 +211,8 @@ class ChatBox extends Component {
                                     key={`b-${idx}`}
                                     speaker={it.speaker}
                                     text={it.text}
-                                    onClick={() => { (it.clickable) && ModalStore.dispatch({
-                                        type: types.SETnOPEN,
-                                        payload: {
-                                            type: ModalTypes.FULL,
-                                            data: { ...it.data }
-                                        }
-                                    }); }}
+                                    onClick={this.onMouseClickHandler(it)}
+                                    onMouseEnter={this.onMouseEnterHandler(it)}
                                     clickable={it.clickable}
                                 />
                             ))

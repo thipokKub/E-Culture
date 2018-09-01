@@ -56,7 +56,7 @@ const FullDescription = (props) => {
             </div>
             <div>
                 <p>{description}</p>
-                <p>
+                <div>
                     <div>
                         <b>ตำบล</b>&nbsp;{tambon}&nbsp;
                         <b>อำเภอ</b>&nbsp;{amphoe}&nbsp;
@@ -66,12 +66,12 @@ const FullDescription = (props) => {
                         <b>Latitude</b>&nbsp;{lat}&nbsp;
                         <b>Longitude</b>&nbsp;{lon}
                     </div>
-                </p>
-                <p>
+                </div>
+                <div>
                     <b>ประเภท</b>&nbsp;{category}<br />
                     <b>source</b>&nbsp;{source}
                     <b>url</b>&nbsp;{url}
-                </p>
+                </div>
             </div>
         </FullDescriptionStyled>
     );
@@ -150,11 +150,9 @@ class ListDescription extends Component {
     }
 
     render() {
-        const listItem = Array.from(new Array(30).keys()).map((idx) => (
-            { ...this.props, title: `${this.props.title} ${idx}` }
-        ))
-
+        const { listItem } = this.props;
         const selectedItem = listItem[this.state.index];
+        console.log(listItem)
 
         return (
             <ListDescriptionStyled>
@@ -177,7 +175,7 @@ class ListDescription extends Component {
                         <h2>{selectedItem.title}</h2>
                         <img alt="full-img" src="https://via.placeholder.com/350x350" />
                         <p>{selectedItem.description}</p>
-                        <p>
+                        <div>
                             <div>
                                 <b>ตำบล</b>&nbsp;{selectedItem.tambon}&nbsp;
                                 <b>อำเภอ</b>&nbsp;{selectedItem.amphoe}&nbsp;
@@ -187,12 +185,12 @@ class ListDescription extends Component {
                                 <b>Latitude</b>&nbsp;{selectedItem.lat}&nbsp;
                                 <b>Longitude</b>&nbsp;{selectedItem.lon}
                             </div>
-                        </p>
-                        <p>
+                        </div>
+                        <div>
                             <b>ประเภท</b>&nbsp;{selectedItem.category}<br />
                             <b>source</b>&nbsp;{selectedItem.source}
                             <b>url</b>&nbsp;{selectedItem.url}
-                        </p>
+                        </div>
                     </section>
                 </div>
             </ListDescriptionStyled>
@@ -200,7 +198,7 @@ class ListDescription extends Component {
     }
 }
 
-const Toggle = () => ModalStore.dispatch({ type: types.RESETnCLOSE })
+const Toggle = () => ModalStore.dispatch({ type: types.TOGGLE })
 
 const Modal = (props) => {
     return (
@@ -217,7 +215,7 @@ const Modal = (props) => {
                             }}
                             onClick={Toggle}
                         />
-                        <ListDescription {...props.data} />
+                        <ListDescription {...props} />
                     </article>
                 </OutsideClickHandler>
             </ModalStyled>
