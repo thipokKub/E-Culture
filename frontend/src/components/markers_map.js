@@ -21,7 +21,7 @@ const MapWithAMarker = compose(withScriptjs, withGoogleMap)(props => {
             onClick={onClick}
             position={{ lat: marker.latitude, lng: marker.longitude }}
           >
-            {props.selectedMarker === marker &&
+            {props.selectedMarker.id === marker.id &&
               <InfoWindow>
                 <div>
                   {marker.name}
@@ -105,15 +105,13 @@ export default class ShelterMap extends Component {
       longitude: it.lon
     }))
 
-    console.log(data, test)
-
     return (
     <div style={{ height: "100%", width: "100%"}}>
     <button onClick={this.changeMarkers}>Toggle Markers</button>
     <button onClick={this.getCurrentLocation}>Get myLocation</button>
       <MapWithAMarker
         selectedMarker={this.state.selectedMarker}
-        markers={test}
+        markers={data}
         onClick={this.handleClick}
         googleMapURL="https://maps.googleapis.com/maps/api/js?key=AIzaSyDGdIFwgysQcG2IBTGPpwlrqWHCBSu6wvI&v=3.exp&libraries=geometry,drawing,places"
         loadingElement={<div style={{ height: `100%` }} />}
