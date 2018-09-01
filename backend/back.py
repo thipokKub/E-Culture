@@ -68,13 +68,8 @@ def describe():
     ret = data[data["title"] == title].to_json(orient='records', force_ascii=False)
     ret['media'] = ret['id'].apply(lambda id : map_id_to_media[id])
     ret['category'] = ret['id'].apply(lambda id : map_id_to_category[id])
-<<<<<<< HEAD
     obj = json.loads(ret.to_json(orient='records', force_ascii=False))     
     return jsonify(obj), 200
-=======
-    obj = json.loads(ret.to_json(orient='records', force_ascii=False)) 
-    return jsonify(ret), 200
->>>>>>> master
 
 
 def euclidean_dist(slat, slon, elat, elon):
