@@ -2,15 +2,27 @@ import React, { Component } from 'react';
 import GoogleMapReact from 'google-map-react';
 
 const AnyReactComponent = ({ text }) => <div>{text}</div>;
-const API_KEY = "";
+const API_KEY = "AIzaSyDGdIFwgysQcG2IBTGPpwlrqWHCBSu6wvI";
 
 class SimpleMap extends Component {
+  constructor(props){
+    super(props);
+    this.state = {
+      title: 'Intiial State',
+      center: {
+        lat: 14.797778,
+        lng: 100.610275
+      },
+      zoom: 15
+    }
+    this.changeState = this.changeState.bind(this);
+  };
   static defaultProps = {
     center: {
-      lat: 59.95,
-      lng: 30.33
+      lat: 14.797778,
+      lng: 100.610275
     },
-    zoom: 11
+    zoom: 15
   };
 
   render() {
@@ -19,17 +31,23 @@ class SimpleMap extends Component {
       <div style={{ height: '100vh', width: '100%' }}>
         <GoogleMapReact
           bootstrapURLKeys={{ key: API_KEY }}
-          defaultCenter={this.props.center}
-          defaultZoom={this.props.zoom}
+          defaultCenter={this.state.center}
+          defaultZoom={this.state.zoom}
         >
           <AnyReactComponent
-            lat={59.955413}
-            lng={30.337844}
-            text={'Kreyser Avrora'}
+            lat={14.797778}
+            lng={100.610275}
+            text={this.state.title}
           />
         </GoogleMapReact>
+        <button onClick={this.changeState}> My button </button>
       </div>
     );
+  }
+  changeState(event){
+    this.setState({
+      title: 'Second State'
+    });
   }
 }
 

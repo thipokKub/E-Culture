@@ -1,6 +1,8 @@
 import React, { Component } from 'react';
 import MapComponent from './components/map';
 import SimpleMap from './components/google_map';
+import MyFancyComponent from './components/google_map_ver2'
+import ShelterMap from './components/markers_map'
 import ChatBox from './components/chat_box';
 import styled from 'styled-components';
 import ModalHelper from './helpers/modal-helper';
@@ -62,7 +64,7 @@ class App extends Component {
             height: "100vh",
             width: "70vw"
           }}>
-            <SimpleMap />
+            <ShelterMap />
           </section>
         </Layout>,
         this.state.modal && (
