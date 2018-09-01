@@ -33,14 +33,19 @@ const decodeHTML = function (html) {
 
 const ChatBoxStyled = styled.section`
     width: 30vw;
-    height: 100vh;
+    height: calc(100vh - 60px);
+    box-shadow: 0px 5px 10px rgba(0, 0, 0, 0.2);
     display: flex;
     justify-content: center;
     box-sizing: border-box;
     padding-top: 2px;
     padding-bottom: 50px;
     position: relative;
+    z-index: 990;
     overflow-y: scroll;
+    background-image: url('https://www.xmple.com/wallpaper/black-graph-paper-white-grid-3200x1800-c2-fffaf0-000000-l2-10-160-a-0-f-20.svg');
+    background-size: contain;
+    
     #Scroll-Chat {
         display: flex;
         flex: 0 1 90%;
@@ -50,13 +55,13 @@ const ChatBoxStyled = styled.section`
     }
 `
 const ChatTextStyled = styled.section`
-    background-color: #999;
     position: absolute;
     bottom: 0;
     width: 100%;
     display: flex;
     align-items: center;
     box-shadow: -5px 0px 5px rgba(0, 0, 0, 0.3);
+    z-index: 991;
     textarea {
         box-sizing: border-box;
         width: 100%;
@@ -362,7 +367,7 @@ class ChatBox extends Component {
                     display: 'flex',
                     justifyContent: 'center',
                     position: 'relative',
-                    backgroundColor: '#FFFDC8'
+                    backgroundColor: '#F1FAEE'
                 }}
             >
                 <ChatBoxStyled>

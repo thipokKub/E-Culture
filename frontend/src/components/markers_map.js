@@ -7,16 +7,38 @@ import {
   Marker,
   InfoWindow,
   DirectionsRenderer
-} from "react-google-maps"
+} from "react-google-maps";
+import styled from 'styled-components';
+
+const Btn = styled.div`
+  border-radius: 50%;
+  width: 50px;
+  height: 50px;
+  position: absolute;
+  top: 6px;
+  left: 190px;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  z-index: 800;
+  ${props =>! props.isOn ? "background-color: #FF4039;" : "background-color: #6BFF6E;"}
+
+  &:hover {
+    filter: brightness(0.9);
+  }
+
+  &:active {
+    filter: brightness(0.8);
+  }
+`
 
 const google = window.google;
-
 const MapWithAMarker = compose(
   withProps({
       googleMapURL: "https://maps.googleapis.com/maps/api/js?key=AIzaSyDGdIFwgysQcG2IBTGPpwlrqWHCBSu6wvI",
       loadingElement: <div style={{ height: `100%` }} />,
       containerElement: <div style={{ height: `400px` }} />,
-      mapElement: <div style={{ height: '100vh' }} />,
+      mapElement: <div style={{ height: 'calc(100vh - 60px)' }} />,
     }),
     withScriptjs,
     withGoogleMap,
@@ -58,7 +80,6 @@ const MapWithAMarker = compose(
         name: "me"
       }]).map(marker => {
         const onClick = props.onClick.bind(this, marker)
-        // console.log(marker);
         return (
           <Marker
             icon={{ url: marker.name === "me" ? "http://maps.google.com/mapfiles/ms/icons/blue-dot.png" :"http://maps.google.com/mapfiles/ms/icons/red-dot.png"}}
@@ -69,10 +90,17 @@ const MapWithAMarker = compose(
             {(props.selectedMarker.id === marker.id && marker.name !== "me") &&
               <InfoWindow>
                 <div>
-                  {marker.name}
+                  <h3>{marker.name}</h3>
                   <hr />
-                  This is a test string
-                  <img alt="thumbnail" src="https://via.placeholder.com/100x100" />
+                  <div style={{ display: 'flex'}}>
+                    <img alt="thumbnail" src={marker.media[0].thumb_pic} width={90} height={90}/>
+                    <div style={{ padding: '0px 0px 0px 10px', position: 'relative', display: 'flex', flexDirection: 'column', justifyContent: 'center', width: '125px', height: '90px'}}>
+                      <span><b>จังหวัด</b>&nbsp;{marker.province}<br /></span>
+                      <span><b>อำเภอ</b>&nbsp;{marker.amphoe}<br /></span>
+                      <span><b>ตำบล</b>&nbsp;{marker.tambon}<br /><br /></span>
+                      <span><b>ระยะทาง</b>&nbsp;{Math.round(100*marker.dist)/100}&nbsp;กม.</span>
+                    </div>
+                  </div>
                 </div>
               </InfoWindow>}
           </Marker>
@@ -156,6 +184,7 @@ export default class ShelterMap extends Component {
   render() {
     let data = this.props.data ? this.props.data : [];
     data = data.map((it, idx) => ({
+      ...it,
       id: `${idx + 1}`,
       name: it.title,
       latitude: it.lat,
@@ -163,9 +192,13 @@ export default class ShelterMap extends Component {
     }))
 
     return (
-      <div style={{ height: "100%", width: "100%"}}>
-        <span>Recentering: </span>
-        <button onClick={this.props.onToggleRecenter}>{this.props.isRecentering ? "ON" : "OFF"}</button>
+      <div style={{ height: "100%", width: "100%", position: 'relative'}}>
+        <Btn
+          onClick={this.props.onToggleRecenter}
+          isOn={this.props.isRecentering}
+        >
+          {this.props.isRecentering ? "ON" : "OFF"}
+        </Btn>
         <MapWithAMarker
           onChangePos={(e) => {this.props.isRecentering && this.props.onChangePos(e)}}
           onRouting={(e) => {}}

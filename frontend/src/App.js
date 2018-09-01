@@ -49,6 +49,14 @@ const Masked = styled.div`
   z-index: 1000;
 `
 
+const Banner = styled.nav`
+  height: 60px;
+  background-color: #666;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+`
+
 class App extends Component {
   constructor(props) {
     super(props);
@@ -135,12 +143,15 @@ class App extends Component {
 
     return (
       [
+        <Banner key="Banner">
+          <span>Title</span>
+        </Banner>,
         <Layout key="layout" scollable={this.state.isOpem}>
           <ChatBox
             pointPos={this.state.pointPos}
           />
           <section style={{
-            height: "100vh",
+            height: "calc(100vh - 100px)",
             width: "70vw"
           }}>
             {

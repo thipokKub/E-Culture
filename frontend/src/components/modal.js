@@ -97,12 +97,19 @@ const ListDescriptionStyled = styled.section`
             min-width: 300px;
             height: 100%;
             max-height: 1050px;
-            overflow-y: scroll;
+            /* overflow-y: scroll; */
+            overflow: scroll;
 
             > article {
                 box-sizing: border-box;
                 border: 1px solid rgba(0, 0, 0, 0.2);
                 background-color: #FFF;
+                display: flex;
+                align-items: center;
+
+                span {
+                    padding-left: 10px;
+                }
 
                 &:hover {
                     filter: brightness(0.9);
@@ -118,6 +125,11 @@ const ListDescriptionStyled = styled.section`
 
                 &.active {
                     border-right: none;
+                }
+
+                img {
+                    height: 100px;
+                    width: 100px;
                 }
             }
         }
@@ -155,18 +167,17 @@ class ListDescription extends Component {
 
     render() {
         const { listItem } = this.props;
-        console.log(listItem)
         const selectedItem = listItem[this.state.index];
 
         return (
             <ListDescriptionStyled>
                 <div className="col">
-                    <section className="list" style={{overflowX:'scroll',overflowY:'scroll'}}>
+                    <section className="list">
                         {
                             listItem.map((it, idx) => {
                                 return (
                                     <article key={idx} onClick={this.onClickIdx(idx)} className={idx === this.state.index ? "active" : ""}>
-                                        <img style={{height:'100px',width:'100px'}} alt="thumbnail" src={it.media[0]['thumb_pic']} />
+                                        <img alt="thumbnail" src={it.media[0]['thumb_pic']} />
                                         <span>{it.title}</span>
                                     </article>
                                 );
@@ -181,7 +192,7 @@ class ListDescription extends Component {
                             <GridList style={{flexWrap: 'nowrap', transform: 'translateZ(0)',}}>
                                 {selectedItem.media.map((media,idx)=>{
                                     return(
-                                        <GridListTile>
+                                        <GridListTile key={idx}>
                                             <img alt="big_pic" src={media['big_pic']}/>
                                         </GridListTile>
                                     )
