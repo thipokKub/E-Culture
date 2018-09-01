@@ -1,13 +1,21 @@
 import React from "react"
-import { compose, withProps } from "recompose"
+import fetch from "isomorphic-fetch";
+import { compose, withProps, withHandlers } from "recompose"
 import { withScriptjs, withGoogleMap, GoogleMap, Marker } from "react-google-maps"
-
+import { MarkerClusterer } from 'react-google-maps/lib/components/addons/MarkerClusterer'
 const MyMapComponent = compose(
   withProps({
     googleMapURL: "https://maps.googleapis.com/maps/api/js?key=AIzaSyDGdIFwgysQcG2IBTGPpwlrqWHCBSu6wvI&v=3.exp&libraries=geometry,drawing,places",
     loadingElement: <div style={{ height: `100%` }} />,
-    containerElement: <div style={{ height: `400px` }} />,
+    containerElement: <div style={{ height: `100%` }} />,
     mapElement: <div style={{ height: `100%` }} />,
+  }),
+  withHandlers({
+    onMarkerClustererClick: () => (markerClusterer) => {
+      const clickedMarkers = markerClusterer.getMarkers()
+      console.log(`Current clicked markers length: ${clickedMarkers.length}`)
+      console.log(clickedMarkers)
+    },
   }),
   withScriptjs,
   withGoogleMap
@@ -16,15 +24,39 @@ const MyMapComponent = compose(
     defaultZoom={8}
     defaultCenter={{ lat: 14.797778, lng: 100.610275 }}
   >
-    {props.isMarkerShown && <Marker position={{ lat: 14.797778, lng: 100.610275 }} onClick={props.onMarkerClick} />}
+  <MarkerClusterer
+      onClick={props.onMarkerClustererClick}
+      averageCenter
+      enableRetinaIcons
+      gridSize={60}
+    >
+      {props.markers.map(marker => (
+        <Marker
+          key={marker.lat}
+          position={{ lat: marker.lat, lng: marker.lng }}
+        />
+      ))}
+    </MarkerClusterer>
+    {/* {props.markers.map(marker => (
+        <Marker
+          key={marker.lat}
+          position={{ lat: marker.lat, lng: marker.lng }}
+        />
+      ))} */}
+    {/* {props.isMarkerShown && <Marker position={{ lat: 14.797778, lng: 100.610275 }} onClick={props.onMarkerClick} />} */}
   </GoogleMap>
 )
 
-export default class MyFancyComponent extends React.PureComponent {
-  state = {
-    isMarkerShown: false,
+export default class MyFancyComponent extends React.Component {
+  constructor(props){
+      super(props);
+      this.state = {
+        isMarkerShown: false,
+        markers: [{ lat: 14.797778, lng: 100.610275 },
+                    { lat: 30.797778, lng: 100.610275 },
+                    { lat: 60.797778, lng: 100.610275 }]
+      }
   }
-
   componentDidMount() {
     this.delayedShowMarker()
   }
@@ -43,8 +75,9 @@ export default class MyFancyComponent extends React.PureComponent {
   render() {
     return (
       <MyMapComponent
-        isMarkerShown={this.state.isMarkerShown}
-        onMarkerClick={this.handleMarkerClick}
+        // isMarkerShown={this.state.isMarkerShown}
+        // onMarkerClick={this.handleMarkerClick}
+        markers={this.state.markers}
       />
     )
   }
