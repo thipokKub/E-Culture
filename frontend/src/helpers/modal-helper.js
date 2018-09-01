@@ -18,7 +18,7 @@ const ModalTypes = {
 
 const emptyItem = {
     type: ModalTypes.NONE,
-    data: {}
+    data: [{}]
 }
 
 const initialState = {
