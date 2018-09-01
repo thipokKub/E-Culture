@@ -109,7 +109,8 @@ class ChatBox extends Component {
                 ยินดีที่ได้รู้จักค่าาาา
                 ฉันเป็นบ๊อทที่สามารถสอบถามข้อมูลเกี่ยวกับสถานที่ landmark ต่างๆ ภายในประเทศไทยได้
                 ก็ขอฝากเนื้อฝากตัวด้วยนะคะ`,
-            }]
+            }],
+            state: "none"
         }
     }
 
@@ -146,9 +147,49 @@ class ChatBox extends Component {
         })();
     }
 
+    onRemapped = (arr) => {
+        return arr.map((it) => ({
+            ...it,
+            description: decodeHTML(decodeURIComponent(it.description)).replace(/(<([^>]+)>)/ig, ''),
+            lat: Math.round(10000 * Number(it.lat)) / 10000,
+            lon: Math.round(10000 * Number(it.lon)) / 10000
+        }))
+    }
+
     onDetectIntention = async (str) => {
         // Assume we detect intention
         try {
+            if(this.state.state === "asking") {
+                this.setState({
+                    state: "none"
+                })
+                this.onAddText("รอสักครู่ค่ะ", "robot")
+
+                // console.log(resp);
+                // return this.onAddText("ยังไม่ได้ทำ", "robot")
+
+                try {
+                    const resp = this.onRemapped((await axios.post(`${TARGET_URL}/getDescription`, {
+                        title: str
+                    })).data)
+
+                    ModalStore.dispatch({
+                        type: types.SET,
+                        payload: {
+                            type: ModalTypes.LIST,
+                            data: resp
+                        }
+                    });
+
+                    const Text = `น่าจะอันนี้ใช่ไหมคะ?
+                                ${resp.map((it) => `${it.title} ที่ จ.${it.province}`).join("")}`;
+
+                    return this.onAddText(Text, "robot", true, resp)
+                } catch (e) {
+                    console.error(e);
+                    throw Error("Something Wrong")
+                }
+            }
 
             const resp = (await axios.post(`${TARGET_URL}/getIntention`, {
                 "text": str
@@ -169,6 +210,12 @@ class ChatBox extends Component {
                     return this.onResponseHelp();
                 }
                 return this.onResponseHelp(resp.text);
+            } else if (intention === "asking") {
+                // Ketyword matching -> More description
+                this.setState({
+                    state: "asking"
+                })
+                return this.onAddText("ใส่ชื่อได้เลยค่ะ", "robot")
             } else if (intention === "recommend") {
                 try {
                     this.onAddText("รอแปปนะคะ", "robot")
@@ -177,12 +224,7 @@ class ChatBox extends Component {
                             const myLocation = this.props.pointPos && this.props.pointPos.lat !== -1 ? this.props.pointPos : { lat: position.coords.latitude, lon: position.coords.longitude };
 
                             try {
-                                const resp2 = (await axios.post(`${TARGET_URL}/getRecommend`, myLocation)).data.map((it) => ({
-                                    ...it,
-                                    description: decodeHTML(decodeURIComponent(it.description)),
-                                    lat: Math.round(10000 * Number(it.lat))/ 10000,
-                                    lon: Math.round(10000 * Number(it.lon))/ 10000
-                                }));
+                                const resp2 = this.onRemapped((await axios.post(`${TARGET_URL}/getRecommend`, myLocation)).data);
                                 ModalStore.dispatch({
                                     type: types.SET,
                                     payload: {
