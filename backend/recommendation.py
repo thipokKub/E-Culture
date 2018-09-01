@@ -65,7 +65,6 @@ class recommender:
 
 
     def recommend(self, sent, row2vec, topn=10):
-        print("ENTER ############")
         cleaned = self.cleanText([sent])[0]    
         tokens = self.tokenized(cleaned)
         vector = self.sentence_vectorizer(tokens, model=self.word2vec)
@@ -75,14 +74,14 @@ class recommender:
                 similar.append((cosine_similarity(v,vector),i))
             except:            
                 pass
-        print(len(similar))
+    
         similar = sorted(similar, reverse=True)[:topn]
         results = []
         for p, row in similar:
             results.append(self.row2id[row])
-        print(results)
+    
         return results
 
     
-    def __call__(self, sentence):
+    def __call__(self, sentence, criteria=None):
         return self.recommend(sent=sentence, row2vec=self.row2vec)

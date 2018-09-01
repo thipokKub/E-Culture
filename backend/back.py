@@ -11,6 +11,7 @@ from dialogflow import detect_intent_texts
 from pythainlp import word_tokenize
 from dataset import map_id_to_category,map_id_to_media,dataset
 import recommendation
+from math import sin, cos, sqrt, atan2, radians
 
 app = Flask(__name__, template_folder="build", static_folder="build/static")
 CORS(app)
@@ -40,11 +41,12 @@ def classifyText():
                 language_code="th"
                 )
     intent = res.query_result.intent.display_name
-    return jsonify({'intent':intent}) , 200
+    res_text = res.query_result.fulfillment_text
+    return jsonify({'intent':intent, 'text':res_text}) , 200
 
 
-@app.route("/api/getRecommend", methods=["POST"])
-def recommend():
+@app.route("/app/search", methods=["POST"])
+def search():
     data = json.loads(request.data.decode('utf-8'))
     text = data['text']
     print("TEXT", text ,"##########")
@@ -52,7 +54,7 @@ def recommend():
     results = recommender(text)
 
     selected = dataset[dataset["id"].isin(results)]
-    selected["description"] = selected['description'].apply(lambda des : cleanText(des))
+    # selected["description"] = selected['description'].apply(lambda des : cleanText(des))
     selected['media'] = selected['id'].apply(lambda id : map_id_to_media[id])
     selected['category'] = selected['id'].apply(lambda id : map_id_to_category[id])
 
@@ -66,10 +68,57 @@ def describe():
     ret = data[data["title"] == title].to_json(orient='records', force_ascii=False)
     ret['media'] = ret['id'].apply(lambda id : map_id_to_media[id])
     ret['category'] = ret['id'].apply(lambda id : map_id_to_category[id])
+<<<<<<< HEAD
+    obj = json.loads(ret.to_json(orient='records', force_ascii=False))     
+    return jsonify(obj), 200
+=======
     obj = json.loads(ret.to_json(orient='records', force_ascii=False)) 
     return jsonify(ret), 200
+>>>>>>> master
 
+
+def euclidean_dist(slat, slon, elat, elon):
+    inf = 2e9
+    R = 6373.0
+
+    try:
+        slat = float(slat)
+        slon = float(slon)
+        elat = float(elat)
+        elon = float(elon)
+    except:
+        return inf
+
+    slat = radians(slat)
+    slon = radians(slon)
+    elat = radians(elat)
+    elon = radians(elon)
+
+    dlon = elon - slon
+    dlat = elat - slat
+
+    a = sin(dlat / 2)**2 + cos(slat) * cos(elat) * sin(dlon / 2)**2
+    c = 2 * atan2(sqrt(a), sqrt(1 - a))
+    distance = R * c
+
+    return distance
+
+
+@app.route("/api/getRecommend", methods=["POST"])
+def recommend():
+    topn = 10
+    data = json.loads(request.data.decode('utf-8'))
+    slat = float(data['lat'])
+    slon = float(data['lon'])
+    ret = dataset.copy()
+    ret['dist'] = ret.apply(lambda row : euclidean_dist(slat,slon, row['lat'], row['lon']),axis=1)
+    ret = ret.sort_values(by=['dist'])
+    # ret["description"] = ret['description'].apply(lambda des : cleanText(str(des)))
+    ret['media'] = ret['id'].apply(lambda id : map_id_to_media[id])
+    ret['category'] = ret['id'].apply(lambda id : map_id_to_category[id])
+    obj = json.loads(ret.to_json(orient='records', force_ascii=False))[:topn]
+    return jsonify(obj), 200
 
 if __name__ == "__main__":    
-    app.run(debug=True)
+    app.run(host="0.0.0.0",debug=True)
     
