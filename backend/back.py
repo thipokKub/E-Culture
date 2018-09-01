@@ -9,25 +9,14 @@ import json
 import re
 from dialogflow import detect_intent_texts
 from pythainlp import word_tokenize
+from dataset import map_id_to_category,map_id_to_media,dataset
 
 app = Flask(__name__, template_folder="build", static_folder="build/static")
-#app.config["MONGO_URI"] = "mongodb://localhost:27017/essenseDB"
-# mongo = PyMongo(app)
 CORS(app)
-# Projects = mongo.db.projects
-dataset = pd.read_csv('ภาคเหนือ_part1.csv')
-dataset2 = pd.read_csv('ภาคเหนือ_part2.csv')
-dataset3 = pd.read_csv('ภาคเหนือ_part3.csv')
-dataset = dataset.append(dataset2)
-dataset = dataset.append(dataset3)
-map_media = pd.read_csv('north_media.csv')
-
 
 def getPicture(input_id):
     results = map_media[mep_media[id] == input_id]
     
-
-
 model = Doc2Vec.load('doc2vec_model')
 
 def cleanText(text):
@@ -48,7 +37,6 @@ def classifyText():
                 texts=[text],
                 language_code="th"
                 )
-    
     intent = res.query_result.intent.display_name
     return jsonify({'intent':intent}) , 200
 
@@ -71,11 +59,16 @@ def recommend():
 
 @app.route("/api/getDescription", methods=["POST"])
 def describe():
-    title = json.loads(request.data.decode('utf-8'))['text']
-    data = integrated_data()
-    ret = json.loads(data[data["title"] == titile].to_json(orient='records', force_ascii=False))
-    return jsonify(ret), 200
-
+    title = json.loads(request.data.decode('utf-8'))['title']
+    ret = dataset[dataset["title"] == title]
+    print('columns :: ',ret.columns)
+    print('len::',len(ret))
+    ret['media'] = ret['id'].apply(lambda id : map_id_to_media[id])
+    ret['category'] = ret['id'].apply(lambda id : map_id_to_category[id])
+    obj = json.loads(ret.to_json(orient='records', force_ascii=False)) 
+    
+    return jsonify(obj), 200
+    # return 'test',200
 
 if __name__ == "__main__":
     app.run(debug=True)
