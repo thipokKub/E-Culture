@@ -9,7 +9,7 @@ import {
 } from "react-google-maps"
 
 const MapWithAMarker = compose(withScriptjs, withGoogleMap)(props => {
-
+    console.log(props)
   return (
     <GoogleMap defaultZoom={7.5} defaultCenter={{ lat: 18.4819, lng: 99.0098}}>
       {props.markers.map(marker => {
@@ -17,6 +17,7 @@ const MapWithAMarker = compose(withScriptjs, withGoogleMap)(props => {
         // console.log(marker);
         return (
           <Marker
+            icon={{url: "http://maps.google.com/mapfiles/ms/icons/red-dot.png"}}
             key={marker.id}
             onClick={onClick}
             position={{ lat: marker.latitude, lng: marker.longitude }}
@@ -31,6 +32,14 @@ const MapWithAMarker = compose(withScriptjs, withGoogleMap)(props => {
           </Marker>
         )
       })}
+      {props.currentLocation.map((currentlocation) => {
+          return (
+            <Marker 
+                icon={{url: "http://maps.google.com/mapfiles/ms/icons/blue-dot.png"}}> 
+                position={currentlocation}
+            </Marker>
+          );
+        })}
     </GoogleMap>
   )
 })
@@ -41,10 +50,13 @@ export default class ShelterMap extends Component {
     this.state = {
       shelters: [],
       selectedMarker: false,
-      markers: []
+      markers: [],
+      currentLocation: [],
+    //   showCurrentlocation: false
     }
 
     this.changeMarkers = this.changeMarkers.bind(this);
+    this.getCurrentLocation = this.getCurrentLocation.bind(this);
   }
   componentDidMount() {
     fetch("https://api.harveyneeds.org/api/v1/shelters?limit=20")
@@ -72,8 +84,11 @@ export default class ShelterMap extends Component {
   }
    getCurrentLocation(){
     if (navigator.geolocation) {
-        navigator.geolocation.getCurrentPosition((myLocation)=>{
-            console.log(myLocation);
+        navigator.geolocation.getCurrentPosition((position)=>{
+            const myLocation = {lat: position.coords.latitude, lng: position.coords.longitude};
+            // console.log(myLocation);
+            this.setState({currentLocation: [ myLocation ]});
+                            // showCurrentlocation: true});
         });
         
     } else { 
@@ -88,6 +103,8 @@ export default class ShelterMap extends Component {
       <MapWithAMarker
         selectedMarker={this.state.selectedMarker}
         markers={this.state.markers}
+        currentLocation={this.state.currentLocation}
+        // showCurrentlocation={this.state.showCurrentlocation}
         onClick={this.handleClick}
         googleMapURL="https://maps.googleapis.com/maps/api/js?key=AIzaSyDGdIFwgysQcG2IBTGPpwlrqWHCBSu6wvI&v=3.exp&libraries=geometry,drawing,places"
         loadingElement={<div style={{ height: `100%` }} />}
