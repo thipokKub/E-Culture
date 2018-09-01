@@ -37,13 +37,6 @@ const MyMapComponent = compose(
         />
       ))}
     </MarkerClusterer>
-    {/* {props.markers.map(marker => (
-        <Marker
-          key={marker.lat}
-          position={{ lat: marker.lat, lng: marker.lng }}
-        />
-      ))} */}
-    {/* {props.isMarkerShown && <Marker position={{ lat: 14.797778, lng: 100.610275 }} onClick={props.onMarkerClick} />} */}
   </GoogleMap>
 )
 

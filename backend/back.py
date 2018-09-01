@@ -9,24 +9,22 @@ import json
 import re
 from dialogflow import detect_intent_texts
 from pythainlp import word_tokenize
+from dataset import map_id_to_category,map_id_to_media,dataset
 
 app = Flask(__name__, template_folder="build", static_folder="build/static")
-#app.config["MONGO_URI"] = "mongodb://localhost:27017/essenseDB"
-# mongo = PyMongo(app)
 CORS(app)
-# Projects = mongo.db.projects
-dataset = pd.read_csv('ภาคเหนือ_part1.csv')
-dataset2 = pd.read_csv('ภาคเหนือ_part2.csv')
-dataset3 = pd.read_csv('ภาคเหนือ_part3.csv')
-dataset = dataset.append(dataset2)
-dataset = dataset.append(dataset3)
+
+def getPicture(input_id):
+    results = map_media[mep_media[id] == input_id]
+    
 model = Doc2Vec.load('doc2vec_model')
 
 def cleanText(text):
-    text = re.sub('[^ก-๙\s]','',text)
+    text = re.sub('[^ก-๙\s0-9]','',text)
     text = re.sub('[\n\t]','',text)
     text = re.sub('[\s]+',' ',text)
     return text
+
 
 @app.route("/api/getIntention",methods=['POST'])
 def classifyText():
@@ -39,26 +37,38 @@ def classifyText():
                 texts=[text],
                 language_code="th"
                 )
-    
     intent = res.query_result.intent.display_name
     return jsonify({'intent':intent}) , 200
-    
+
 
 @app.route("/api/getRecommend", methods=["POST"])
 def recommend():
     text = json.loads(request.data.decode('utf-8'))['text']
-    
     tokenized_words = word_tokenize(cleanText(text))
-    results = model.docvecs.most_similar([model.infer_vector(tokenized_words)])
+    results = model.docvecs.most_similar([model.infer_vector(tokenized_words)], topn = 5)
     
-    res = dataset.iloc[[res[0][0] for res in results]]
-
+    select = np.zeros(dataset.shape[0], dtype=np.bool)
+    for r,p in results:
+        select[r] = True
+    
+    res = dataset[select]
+    res["description"] = res['description'].apply(lambda des : cleanText(des))
     obj = json.loads(res.to_json(orient='records', force_ascii=False))    
     return jsonify(obj), 200
 
-# @app.route("/api/getAsking", methods=["POST"])
-# def asking():
 
+@app.route("/api/getDescription", methods=["POST"])
+def describe():
+    title = json.loads(request.data.decode('utf-8'))['title']
+    ret = dataset[dataset["title"] == title]
+    print('columns :: ',ret.columns)
+    print('len::',len(ret))
+    ret['media'] = ret['id'].apply(lambda id : map_id_to_media[id])
+    ret['category'] = ret['id'].apply(lambda id : map_id_to_category[id])
+    obj = json.loads(ret.to_json(orient='records', force_ascii=False)) 
+    
+    return jsonify(obj), 200
+    # return 'test',200
 
 if __name__ == "__main__":
     app.run(debug=True)

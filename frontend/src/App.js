@@ -12,6 +12,7 @@ const { ModalStore } = ModalHelper;
 
 const Layout = styled.section`
   display: flex;
+  overflow: hidden;
 
   ${props => props.scollable ? "overflow: hidden;" : ""}
 
@@ -49,27 +50,46 @@ const Masked = styled.div`
 class App extends Component {
   constructor(props) {
     super(props);
-    this.state = { modal: false };
+    this.state = {
+      isOpen: false,
+      modal: null
+    };
     ModalStore.subscribe(() => {
-      this.setState({ modal: ModalStore.getState() })
+      this.setState({ ...ModalStore.getState() })
     })
   }
 
   render() {
+    // const listItem = this.state.item ? Array.from(new Array(14).keys()).map((idx) => (
+    //   { ...this.state.item.data,
+    //     title: `${this.state.item.data.title} ${idx}`,
+    //     lat: Math.round(10000000*(this.state.item.data.lat + 3*(Math.random() - 0.5)))/10000000,
+    //     lon: Math.round(10000000*(this.state.item.data.lon + 3*(Math.random() - 0.5)))/10000000
+    //   }
+    // )).concat([{ ...this.state.item.data }]) : [];
+
+    const listItem = this.state.item ? this.state.item.data : []
+
     return (
       [
-        <Layout key="layout" scollable={this.state.modal}>
+        <Layout key="layout" scollable={this.state.isOpem}>
           <ChatBox />
           <section style={{
             height: "100vh",
             width: "70vw"
           }}>
-            <ShelterMap />
+            <ShelterMap
+              data={listItem}
+            />
           </section>
         </Layout>,
-        this.state.modal && (
+        this.state.isOpen && (
           <Masked key="backdrop">
-            <Modal key="modal" />
+            <Modal
+              key="modal"
+              {...this.state.item}
+              listItem={listItem}
+            />
           </Masked>
         )
       ]

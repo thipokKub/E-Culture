@@ -22,10 +22,13 @@ const MapWithAMarker = compose(withScriptjs, withGoogleMap)(props => {
             onClick={onClick}
             position={{ lat: marker.latitude, lng: marker.longitude }}
           >
-            {props.selectedMarker === marker &&
+            {props.selectedMarker.id === marker.id &&
               <InfoWindow>
                 <div>
                   {marker.name}
+                  <hr />
+                  This is a test string
+                  <img alt="thumbnail" src="https://via.placeholder.com/100x100" />
                 </div>
               </InfoWindow>}
             }
@@ -44,15 +47,31 @@ const MapWithAMarker = compose(withScriptjs, withGoogleMap)(props => {
   )
 })
 
+const test = [{ id: "1", name: "นางจันทร์ดี      อินทพันธ์  ", latitude: 17.6116, longitude: 99.2158 }]
+
+const marker1 = [
+  { id: "1", name: "A", latitude: 19.4819, longitude: 99.1098 },
+  { id: "2", name: "B", latitude: 18.2565, longitude: 98.3627 },
+  { id: "3", name: "C", latitude: 18.1107, longitude: 98.5525 },
+  { id: "4", name: "D", latitude: 18.6176, longitude: 98.3791 },
+  { id: "5", name: "นางจันทร์ดี      อินทพันธ์  ", latitude: 17.6116, longitude: 99.2158 }
+];
+
+const marker2 = [
+  { id: "1", name: "A", latitude: 19.4819, longitude: 99.0098 },
+  { id: "2", name: "B", latitude: 18.6565, longitude: 98.9627 },
+  { id: "3", name: "C", latitude: 18.5107, longitude: 98.8525 },
+  { id: "4", name: "D", latitude: 18.6176, longitude: 98.7791 },
+];
+
 export default class ShelterMap extends Component {
   constructor(props) {
     super(props)
     this.state = {
       shelters: [],
       selectedMarker: false,
-      markers: [],
-      currentLocation: [],
-    //   showCurrentlocation: false
+      markers: marker1,
+      markerState: 0,
     }
 
     this.changeMarkers = this.changeMarkers.bind(this);
@@ -69,17 +88,12 @@ export default class ShelterMap extends Component {
     // console.log({ marker })
     this.setState({ selectedMarker: marker })
   }
-  changeMarkers(){
-      console.log("Change Markers");
-      if(this.state.markers.length){
-        this.setState({markers:[] });
+  changeMarkers() {
+      if(this.state.markerState === 0){
+        this.setState({ markers: marker1, markerState: 1 });
       }
       else{
-        this.setState({markers: [{id: "1", name: "A", latitude: 19.4819, longitude: 99.0098},
-        {id: "2", name: "B", latitude: 18.6565, longitude: 98.9627},
-        {id: "3", name: "C", latitude: 18.5107, longitude: 98.8525},
-        {id: "4", name: "D", latitude: 18.6176, longitude: 98.7791},
-        ]});
+        this.setState({markers: marker2, markerState: 0});
       }
   }
    getCurrentLocation(){
@@ -96,15 +110,21 @@ export default class ShelterMap extends Component {
     }
    }
   render() {
+    let data = this.props.data ? this.props.data : [];
+    data = data.map((it, idx) => ({
+      id: `${idx + 1}`,
+      name: it.title,
+      latitude: it.lat,
+      longitude: it.lon
+    }))
+
     return (
     <div style={{ height: "100%", width: "100%"}}>
     <button onClick={this.changeMarkers}>Toggle Markers</button>
     <button onClick={this.getCurrentLocation}>Get myLocation</button>
       <MapWithAMarker
         selectedMarker={this.state.selectedMarker}
-        markers={this.state.markers}
-        currentLocation={this.state.currentLocation}
-        // showCurrentlocation={this.state.showCurrentlocation}
+        markers={data}
         onClick={this.handleClick}
         googleMapURL="https://maps.googleapis.com/maps/api/js?key=AIzaSyDGdIFwgysQcG2IBTGPpwlrqWHCBSu6wvI&v=3.exp&libraries=geometry,drawing,places"
         loadingElement={<div style={{ height: `100%` }} />}

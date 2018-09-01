@@ -4,10 +4,24 @@ import styled from 'styled-components';
 import ModalHelper from '../helpers/modal-helper';
 import TextareaAutosize from 'react-autosize-textarea';
 
-const { ModalStore, types } = ModalHelper;
+const { ModalStore, types, ModalTypes } = ModalHelper;
 
 const minRows = 2;
 const magicNumber = 41; // This number is the final textarea height after "reset" -> set button height
+
+const exampleObj = {
+    "amphoe": "เถิน",
+    "category": "ปราชญ์ชาวบ้าน",
+    "description": "๒ ข้อมูลภูมิปัญญา ๒๑ ชื่อข้อมูลภูมิปัญญา ด้านอาหารและโภชนาการน้ำส้มเกลี้ยงแก้วแปรรูปพาสเจอร์ไรซ์ ๒๒ ความรู้ความสามารถ มีความสามารถในการแปรรูปน้ำส้มเกลี้ยงเป็นเครื่องดื่มเพื่อสุขภาพเพื่อจำหน่ายตามสถานที่ต่างๆในอำเภอเถินและต่างจังหวัด ๒๓ วัสดุวัตถุดิบสื่ออุปกรณ์สำหรับการผลิตผลงานของภูมิปัญญาท้องถิ่น ๑ ผลส้มเกลี้ยงซึ่งเป็นผลไม้ประจำถิ่นของอำเภอเถิน จำนวน ๑๐ กก ๒ เครื่องคั้นน้ำส้มเกลี้ยง ๑ เครื่อง ๓ เกลือป่น ๑ ถุงใหญ่ ๔ น้ำตาล ๕ กก ๕ วัสดุสำหรับบรรจุลงแก้วขวดพลาสติก ๒๔ วิธีการถ่ายทอดของภูมิปัญญาท้องถิ่น ใช้การสอนโดยการบรรยายและหัดทำด้วยของจริง ๑ สอนให้รู้จักกับลักษณะและส่วนประกอบของน้ำส้มเกลี้ยง ๒ สอนให้รู้จักกับอุปกรณ์ที่ต้องใช้แต่ละชนิด ๓ สอนให้รู้จักการคั้นน้ำส้มเกลี้ยงที่ถูกสุขอนามัย ๔ ปรุงรสด้วยน้ำตาลและเกลือป่น ๕ บรรจุน้ำส้มเกลี้ยงลงในแก้วแล้วปิดผนึกปากแก้วและประทับตราสินค้า ๒๖ ประโยชน์คุณค่าของภูมิปัญญาและของผลงาน ประโยชน์ของน้ำส้มเกลี้ยงคือมีสารอาหารวิตามินซีและเป็นการถนอมอาหารอย่างหนึ่งเพื่อเก็บไว้กินได้นานขึ้น คุณค่าของภูมิปัญญาคือได้ถ่ายทอดองค์ความรู้ให้เยาวชนหรือประชาชนที่สนใจ",
+    "id": "MOC-16119",
+    "lat": 17.6116667,
+    "lon": 99.2158333,
+    "province": "ลำปาง",
+    "source": "ศูนย์ข้อมูลกลางทางวัฒนธรรม",
+    "tambon": "ล้อมแรด",
+    "title": "นางจันทร์ดี      อินทพันธ์  ",
+    "url": "http://123.242.145.13/album/16119"
+}
 
 const ChatBoxStyled = styled.section`
     width: 30vw;
@@ -60,6 +74,14 @@ const ChatTextStyled = styled.section`
         color: #FFF;
         height: 100%;
         outline: none;
+
+        &:hover {
+            filter: brightness(1.2);
+        }
+
+        &:active {
+            filter: brightness(0.8);
+        }
     }
 `
 
@@ -69,22 +91,13 @@ class ChatBox extends Component {
         this.state = {
             height: 0,
             text: "",
-            history: Array.from(new Array(50).keys()).map(it => {
-                const speaker = it % 2 === 0 ? "me" : "robot";
-                if (speaker === "robot") {
-                    return ({
-                        speaker: speaker,
-                        text: `Hello ${it}`,
-                        data: {
-                            "somedata": "lol"
-                        }
-                    })
-                }
-                return ({
-                    speaker: speaker,
-                    text: `Hello ${it}`,
-                })
-            })
+            history: [{
+                speaker: "robot",
+                text: "สวัสดีค่ะ บลาๆๆ เป็นข้อความต้อนรับอ่ะ อิๆ",
+            }, {
+                speaker: "robot",
+                text: "ท่านสามารถสอบถาม บลาๆๆ ได้"
+            }]
         }
     }
 
@@ -97,11 +110,62 @@ class ChatBox extends Component {
         })
     }
 
-    onAddText = (str) => {
+    onDetectIntention = async (str) => {
+        // Assume we detect intention
+        try {
+            const intention = await new Promise((res) => {
+                setTimeout(() => {
+                    res("recommendation")
+                }, 200);
+            });
+            this.onAddText(`Detected intention: ${intention}`, "robot")
+
+            const response = await new Promise((res) => {
+                setTimeout(() => {
+                    // Assume responses is always an array
+                    const listItem = Array.from(new Array(4).keys()).map((idx) => (
+                        {
+                            ...exampleObj,
+                            title: `${exampleObj.title} ${idx}`,
+                            lat: Math.round(10000 * (exampleObj.lat + 3 * (Math.random() - 0.5))) / 10000,
+                            lon: Math.round(10000 * (exampleObj.lon + 3 * (Math.random() - 0.5))) / 10000
+                        }
+                    )).concat([{
+                        ...exampleObj,
+                        lat: Math.round(10000 * (exampleObj.lat)) / 10000,
+                        lon: Math.round(10000 * (exampleObj.lon)) / 10000
+                    }])
+
+                    res({
+                        message: "Lorem ipsum stuff here",
+                        data: listItem
+                    })
+
+                    ModalStore.dispatch({
+                        type: types.SET,
+                        payload: {
+                            type: ModalTypes.LIST,
+                            data: listItem
+                        }
+                    })
+                }, 500);
+            });
+            this.onAddText(`${response.message}`, "robot", true, response.data)
+        } catch (e) {
+            this.onAddText("ขอโทษค่ะ ตอนนี้ไม่สามารถต่อกับเซิฟเวอร์ได้ กรุณาลองใไม่อีกครั้ง", "robot")
+        }
+    }
+
+    onAddText = (str, speaker="me", clickable=false, data = undefined) => {
+        if(speaker === "me") {
+            this.onDetectIntention(str)
+        }
         this.setState({
             history: this.state.history.concat([{
-                speaker: "me",
-                text: str
+                speaker: speaker,
+                text: str,
+                clickable: clickable,
+                data: data
             }])
         }, () => {
             const elem = document.getElementById("Scroll-Chat");
@@ -109,9 +173,40 @@ class ChatBox extends Component {
         })
     }
 
+    onMouseClickHandler = (it) => {
+        return () => {
+            (it.clickable) && ModalStore.dispatch({
+                type: types.SETnOPEN,
+                payload: {
+                    type: ModalTypes.LIST,
+                    data: [...it.data]
+                }
+            });
+        }
+    }
+
+    onMouseEnterHandler = (it) => {
+        return () => {
+            (it.clickable) && ModalStore.dispatch({
+                type: types.SET,
+                payload: {
+                    type: ModalTypes.LIST,
+                    data: [...it.data]
+                }
+            });
+        }
+    }
+
     render() {
         return (
-            <section style={{ display: 'flex', justifyContent: 'center', position: 'relative'}}>
+            <section
+                style={{
+                    display: 'flex',
+                    justifyContent: 'center',
+                    position: 'relative',
+                    backgroundColor: '#FFFDC8'
+                }}
+            >
                 <ChatBoxStyled>
                     <section id="Scroll-Chat">
                         {
@@ -120,7 +215,9 @@ class ChatBox extends Component {
                                     key={`b-${idx}`}
                                     speaker={it.speaker}
                                     text={it.text}
-                                    onClick={() => { it.speaker === "robot" && ModalStore.dispatch({ type: types.TOGGLE }); }}
+                                    onClick={this.onMouseClickHandler(it)}
+                                    onMouseEnter={this.onMouseEnterHandler(it)}
+                                    clickable={it.clickable}
                                 />
                             ))
                         }
@@ -161,6 +258,16 @@ class ChatBox extends Component {
                         style={{
                             height: this.state.height
                         }}
+                        onClick={() => {
+                            if (this._textArea.value.length > 0) {
+                                this.onAddText(this._textArea.value);
+                            }
+                            this._textArea.value = "";
+                            this.setState({
+                                height: magicNumber,
+                                text: this._textArea.value
+                            })
+                        }}
                     >Send</button>
                 </ChatTextStyled>
             </section>
@@ -170,5 +277,24 @@ class ChatBox extends Component {
 
 
 //<button>Send</button>
+/*
+Array.from(new Array(50).keys()).map(it => {
+    const speaker = it % 2 === 0 ? "me" : "robot";
+    if (speaker === "robot") {
+        return ({
+            speaker: speaker,
+            text: `Hello ${it}`,
+            data: {
+                "somedata": "lol"
+            }
+        })
+    }
+    return ({
+        speaker: speaker,
+        text: `Hello ${it}`,
+    })
+})
+*/
+
 
 export default ChatBox;
