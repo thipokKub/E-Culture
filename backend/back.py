@@ -10,9 +10,11 @@ import re
 from dialogflow import detect_intent_texts
 from pythainlp import word_tokenize
 from dataset import map_id_to_category,map_id_to_media,dataset
+import recommendation
 
 app = Flask(__name__, template_folder="build", static_folder="build/static")
 CORS(app)
+recommender = recommendation.recommender()
 
 def getPicture(input_id):
     results = map_media[mep_media[id] == input_id]
@@ -43,17 +45,18 @@ def classifyText():
 
 @app.route("/api/getRecommend", methods=["POST"])
 def recommend():
-    text = json.loads(request.data.decode('utf-8'))['text']
-    tokenized_words = word_tokenize(cleanText(text))
-    results = model.docvecs.most_similar([model.infer_vector(tokenized_words)], topn = 5)
-    
-    select = np.zeros(dataset.shape[0], dtype=np.bool)
-    for r,p in results:
-        select[r] = True
-    
-    res = dataset[select]
-    res["description"] = res['description'].apply(lambda des : cleanText(des))
-    obj = json.loads(res.to_json(orient='records', force_ascii=False))    
+    data = json.loads(request.data.decode('utf-8'))
+    text = data['text']
+    print("TEXT", text ,"##########")
+    # results = model.docvecs.most_similar([model.infer_vector(tokenized_words)], topn = 5)
+    results = recommender(text)
+
+    selected = dataset[dataset["id"].isin(results)]
+    selected["description"] = selected['description'].apply(lambda des : cleanText(des))
+    selected['media'] = selected['id'].apply(lambda id : map_id_to_media[id])
+    selected['category'] = selected['id'].apply(lambda id : map_id_to_category[id])
+
+    obj = json.loads(selected.to_json(orient='records', force_ascii=False))    
     return jsonify(obj), 200
 
 
@@ -70,5 +73,7 @@ def describe():
     return jsonify(obj), 200
     # return 'test',200
 
-if __name__ == "__main__":
+
+if __name__ == "__main__":    
     app.run(debug=True)
+    

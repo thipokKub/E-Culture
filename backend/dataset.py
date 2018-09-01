@@ -5,7 +5,7 @@ from collections import defaultdict
 dataset = pd.read_csv('dataset/culture/ภาคเหนือ/ภาคเหนือ_part1.csv',encoding='utf-8')
 dataset = dataset.append(pd.read_csv('dataset/culture/ภาคเหนือ/ภาคเหนือ_part2.csv',encoding='utf-8'))
 dataset = dataset.append(pd.read_csv('dataset/culture/ภาคเหนือ/ภาคเหนือ_part3.csv',encoding='utf-8'))
-dataset.drop_duplicates(['description'],inplace=True)
+dataset = dataset.drop_duplicates(['description'])
 
 map_id_to_category = defaultdict(lambda : [])
 def check_category(row):
