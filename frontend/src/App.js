@@ -3,10 +3,12 @@ import MapComponent from './components/map';
 import SimpleMap from './components/google_map';
 import MyFancyComponent from './components/google_map_ver2'
 import ShelterMap from './components/markers_map'
+import MapWithADirectionsRenderer from './components/direction_map'
 import ChatBox from './components/chat_box';
 import styled from 'styled-components';
 import ModalHelper from './helpers/modal-helper';
 import Modal from './components/modal';
+import { DirectionsRenderer } from 'react-google-maps';
 
 const { ModalStore } = ModalHelper;
 
@@ -78,9 +80,10 @@ class App extends Component {
             height: "100vh",
             width: "70vw"
           }}>
-            <ShelterMap
+            <MapWithADirectionsRenderer start={{lat: 18.6565, lon: 98.9627}} dest={{lat: 18.6176, lon: 98.7791}}/>
+            {/* <ShelterMap
               data={listItem}
-            />
+            /> */}
           </section>
         </Layout>,
         this.state.isOpen && (
