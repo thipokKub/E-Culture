@@ -9,15 +9,18 @@ import {
 } from "react-google-maps"
 
 const MapWithAMarker = compose(withScriptjs, withGoogleMap)(props => {
-    console.log(props)
   return (
-    <GoogleMap defaultZoom={7.5} defaultCenter={{ lat: 18.4819, lng: 99.0098}}>
+    <GoogleMap defaultZoom={7.5} defaultCenter={{ lat: 18.4819, lng: 99.0098}}
+      onClick={(e) => {
+        props.onChangePos && props.onChangePos(e);
+      }}
+    >
       {props.markers.map(marker => {
         const onClick = props.onClick.bind(this, marker)
         // console.log(marker);
         return (
           <Marker
-            icon={{url: "http://maps.google.com/mapfiles/ms/icons/red-dot.png"}}
+            icon={{ url: props.isMe ? "http://maps.google.com/mapfiles/ms/icons/blue-dot.png" : "http://maps.google.com/mapfiles/ms/icons/red-dot.png"}}
             key={marker.id}
             onClick={onClick}
             position={{ lat: marker.latitude, lng: marker.longitude }}
@@ -120,18 +123,19 @@ export default class ShelterMap extends Component {
     }))
 
     return (
-    <div style={{ height: "100%", width: "100%"}}>
-    <button onClick={this.changeMarkers}>Toggle Markers</button>
-    <button onClick={this.getCurrentLocation}>Get myLocation</button>
-      <MapWithAMarker
-        selectedMarker={this.state.selectedMarker}
-        markers={data}
-        onClick={this.handleClick}
-        googleMapURL="https://maps.googleapis.com/maps/api/js?key=AIzaSyDGdIFwgysQcG2IBTGPpwlrqWHCBSu6wvI&v=3.exp&libraries=geometry,drawing,places"
-        loadingElement={<div style={{ height: `100%` }} />}
-        containerElement={<div style={{ height: `100%` }} />}
-        mapElement={<div style={{ height: `100%` }} />}
-      />
+      <div style={{ height: "100%", width: "100%"}}>
+        <button onClick={this.changeMarkers}>Toggle Markers</button>
+        <button onClick={this.getCurrentLocation}>Get myLocation</button>
+        <MapWithAMarker
+          onChangePos={this.props.onChangePos}
+          selectedMarker={this.state.selectedMarker}
+          markers={data}
+          onClick={this.handleClick}
+          googleMapURL="https://maps.googleapis.com/maps/api/js?key=AIzaSyDGdIFwgysQcG2IBTGPpwlrqWHCBSu6wvI&v=3.exp&libraries=geometry,drawing,places"
+          loadingElement={<div style={{ height: `100%` }} />}
+          containerElement={<div style={{ height: `100%` }} />}
+          mapElement={<div style={{ height: `100%` }} />}
+        />
       </div>
     )
   }

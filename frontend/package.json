@@ -3,6 +3,7 @@
   "version": "0.1.0",
   "private": true,
   "dependencies": {
+    "axios": "^0.18.0",
     "d3-array": "^1.2.4",
     "d3-dsv": "^1.0.10",
     "d3-scale": "^2.1.2",

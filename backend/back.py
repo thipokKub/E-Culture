@@ -65,13 +65,16 @@ def search():
 @app.route("/api/getDescription", methods=["POST"])
 def describe():
     title = json.loads(request.data.decode('utf-8'))['title']
-    ret = dataset[dataset["title"] == title]
-    print('columns :: ',ret.columns)
-    print('len::',len(ret))
+    ret = data[data["title"] == title].to_json(orient='records', force_ascii=False)
     ret['media'] = ret['id'].apply(lambda id : map_id_to_media[id])
     ret['category'] = ret['id'].apply(lambda id : map_id_to_category[id])
+<<<<<<< HEAD
     obj = json.loads(ret.to_json(orient='records', force_ascii=False))     
     return jsonify(obj), 200
+=======
+    obj = json.loads(ret.to_json(orient='records', force_ascii=False)) 
+    return jsonify(ret), 200
+>>>>>>> master
 
 
 def euclidean_dist(slat, slon, elat, elon):
