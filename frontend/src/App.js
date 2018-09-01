@@ -91,6 +91,7 @@ class App extends Component {
     // )).concat([{ ...this.state.item.data }]) : [];
 
     const listItem = this.state.item ? this.state.item.data : []
+    console.log(this.state)
 
     return (
       [
