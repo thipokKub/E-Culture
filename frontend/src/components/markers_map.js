@@ -126,6 +126,7 @@ export default class ShelterMap extends Component {
       <div style={{ height: "100%", width: "100%"}}>
         <button onClick={this.changeMarkers}>Toggle Markers</button>
         <button onClick={this.getCurrentLocation}>Get myLocation</button>
+        <button onClick={this.props.onToggleRecenter}>{this.props.isRecentering ? "ON" : "OFF"}</button>
         <MapWithAMarker
           onChangePos={this.props.onChangePos}
           selectedMarker={this.state.selectedMarker}

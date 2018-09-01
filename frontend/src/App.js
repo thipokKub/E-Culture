@@ -58,10 +58,17 @@ class App extends Component {
       pointPos: {
         lat: -1,
         lon: -1
-      }
+      },
+      isRecentering: false
     };
     ModalStore.subscribe(() => {
       this.setState({ ...ModalStore.getState() })
+    })
+  }
+
+  onToggleRecenter = () => {
+    this.setState({
+      isRecentering: !this.state.isRecentering
     })
   }
 
@@ -101,6 +108,8 @@ class App extends Component {
             <ShelterMap
               data={listItem}
               onChangePos={this.onChangePos}
+              onToggleRecenter={this.onToggleRecenter}
+              isRecentering={this.state.isRecentering}
             />
           </section>
         </Layout>,
