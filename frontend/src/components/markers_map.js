@@ -9,7 +9,7 @@ import {
 } from "react-google-maps"
 
 const MapWithAMarker = compose(withScriptjs, withGoogleMap)(props => {
-
+    console.log(props)
   return (
     <GoogleMap defaultZoom={7.5} defaultCenter={{ lat: 18.4819, lng: 99.0098}}>
       {props.markers.map(marker => {
@@ -17,6 +17,7 @@ const MapWithAMarker = compose(withScriptjs, withGoogleMap)(props => {
         // console.log(marker);
         return (
           <Marker
+            icon={{url: "http://maps.google.com/mapfiles/ms/icons/red-dot.png"}}
             key={marker.id}
             onClick={onClick}
             position={{ lat: marker.latitude, lng: marker.longitude }}
@@ -34,6 +35,15 @@ const MapWithAMarker = compose(withScriptjs, withGoogleMap)(props => {
           </Marker>
         )
       })}
+      {/* {props.currentLocation.map((currentlocation) => {
+          return (
+            <Marker 
+                key={marker.id}
+                icon={{url: "http://maps.google.com/mapfiles/ms/icons/blue-dot.png"}}> 
+                position={currentlocation}
+            </Marker>
+          );
+        })} */}
     </GoogleMap>
   )
 })
@@ -66,6 +76,7 @@ export default class ShelterMap extends Component {
     }
 
     this.changeMarkers = this.changeMarkers.bind(this);
+    this.getCurrentLocation = this.getCurrentLocation.bind(this);
   }
   componentDidMount() {
     fetch("https://api.harveyneeds.org/api/v1/shelters?limit=20")
@@ -88,8 +99,11 @@ export default class ShelterMap extends Component {
   }
    getCurrentLocation(){
     if (navigator.geolocation) {
-        navigator.geolocation.getCurrentPosition((myLocation)=>{
-            console.log(myLocation);
+        navigator.geolocation.getCurrentPosition((position)=>{
+            const myLocation = {lat: position.coords.latitude, lng: position.coords.longitude};
+            // console.log(myLocation);
+            this.setState({currentLocation: [ myLocation ]});
+                            // showCurrentlocation: true});
         });
         
     } else { 
