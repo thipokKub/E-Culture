@@ -51,10 +51,6 @@ def classifyText():
     
     intent = res.query_result.intent.display_name
     return jsonify({'intent':intent}) , 200
-    
-
-def integrated_data():
-
 
 
 @app.route("/api/getRecommend", methods=["POST"])
