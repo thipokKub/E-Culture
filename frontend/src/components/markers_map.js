@@ -35,14 +35,15 @@ const MapWithAMarker = compose(withScriptjs, withGoogleMap)(props => {
           </Marker>
         )
       })}
-      {props.currentLocation.map((currentlocation) => {
+      {/* {props.currentLocation.map((currentlocation) => {
           return (
             <Marker 
+                key={marker.id}
                 icon={{url: "http://maps.google.com/mapfiles/ms/icons/blue-dot.png"}}> 
                 position={currentlocation}
             </Marker>
           );
-        })}
+        })} */}
     </GoogleMap>
   )
 })
