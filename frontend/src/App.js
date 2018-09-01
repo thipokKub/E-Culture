@@ -59,10 +59,51 @@ class App extends Component {
         lat: -1,
         lon: -1
       },
-      isRecentering: false
+      isRecentering: false,
+      isRouting: false,
+      routeState: "A",
+      pointA: {
+        lat: -1,
+        lon: -1
+      },
+      pointB: {
+        lat: -1,
+        lon: -1
+      }
     };
     ModalStore.subscribe(() => {
       this.setState({ ...ModalStore.getState() })
+    })
+  }
+
+  componentDidMount() {
+    if (navigator.geolocation) {
+      navigator.geolocation.getCurrentPosition((position) => {
+        this.setState({
+          pointPos: {
+            lat: Math.round(100000 * position.coords.latitude) / 100000,
+            lon: Math.round(100000 * position.coords.longitude) / 100000
+          },
+          pointA: {
+            lat: Math.round(100000 * position.coords.latitude) / 100000,
+            lon: Math.round(100000 * position.coords.longitude) / 100000
+          },
+          pointB: {
+            lat: Math.round(100000 * position.coords.latitude) / 100000,
+            lon: Math.round(100000 * position.coords.longitude) / 100000
+          }
+        });
+      });
+    }
+  }
+
+  onToggleRoutePoint = () => {
+    this.setState({ routeState: this.state.routeState === "A" ? "B" : "A"})
+  }
+
+  onSetRoutePoint = (lat, lon) => {
+    this.setState({
+      [this.state.routeState === "A" ? "pointA" : "pointB"]: { lat, lon }
     })
   }
 
@@ -91,7 +132,6 @@ class App extends Component {
     // )).concat([{ ...this.state.item.data }]) : [];
 
     const listItem = this.state.item ? this.state.item.data : []
-    console.log(this.state)
 
     return (
       [
@@ -111,6 +151,7 @@ class App extends Component {
               onChangePos={this.onChangePos}
               onToggleRecenter={this.onToggleRecenter}
               isRecentering={this.state.isRecentering}
+              currentPos={this.state.pointPos}
             />
           </section>
         </Layout>,

@@ -6,7 +6,7 @@ import TextareaAutosize from 'react-autosize-textarea';
 import axios from 'axios';
 
 const { ModalStore, types, ModalTypes } = ModalHelper;
-const TARGET_URL = `http://192.168.43.170:5000/api`
+const TARGET_URL = `http://172.20.10.2:5000/api`
 
 const minRows = 2;
 const magicNumber = 41; // This number is the final textarea height after "reset" -> set button height
@@ -25,7 +25,7 @@ const exampleObj = {
     "url": "http://123.242.145.13/album/16119"
 }
 
-var decodeHTML = function (html) {
+const decodeHTML = function (html) {
     var txt = document.createElement('textarea');
     txt.innerHTML = html;
     return txt.value;
@@ -153,7 +153,7 @@ class ChatBox extends Component {
         // Assume we detect intention
         try {
             if (this.state.state === 'search'){
-                console.log('searching')
+                this.onAddText("ขอเวลานิกนึงนะคะ", "robot")
                 return axios.post(`${TARGET_URL}/search`,{text:str}).then((res)=>{
                     let search_list = res.data
                     this.setState({ state: 'none' }, () => {
@@ -179,26 +179,26 @@ class ChatBox extends Component {
                 })
                 this.onAddText("รอสักครู่ค่ะ", "robot")
 
-                // console.log(resp);
-                // return this.onAddText("ยังไม่ได้ทำ", "robot")
-
                 try {
                     const resp = this.onRemapped((await axios.post(`${TARGET_URL}/getDescription`, {
                         title: str
                     })).data)
-
-                    ModalStore.dispatch({
-                        type: types.SET,
-                        payload: {
-                            type: ModalTypes.LIST,
-                            data: resp
-                        }
-                    });
-
-                    const Text = `น่าจะอันนี้ใช่ไหมคะ?
-                                ${resp.map((it) => `${it.title} ที่ จ.${it.province}`).join("")}`;
-
-                    return this.onAddText(Text, "robot", true, resp)
+                    if(resp.length > 0) {
+                        ModalStore.dispatch({
+                            type: types.SET,
+                            payload: {
+                                type: ModalTypes.LIST,
+                                data: resp
+                            }
+                        });
+    
+                        const Text = `น่าจะอันนี้ใช่ไหมคะ?
+                                    ${resp.map((it) => `${it.title} ที่ จ.${it.province}`).join("")}`;
+                        return this.onAddText(Text, "robot", true, resp)
+                    } else {
+                        return this.onAddText(`ขอโทษค่ะ ไม่ฉันหาไม่เจอเลย
+                        กรุณาตรวจสอบว่าท่านเขียนชื่อถูกต้อง แล้วถามใหม่อีกครั้งนะคะ`, "robot", true, resp)
+                    }
                 } catch (e) {
                     console.error(e);
                     throw Error("Something Wrong")
@@ -210,7 +210,7 @@ class ChatBox extends Component {
             })).data
 
             const intention = resp.intent;
-
+            this.onAddText(`Detected intention: ${intention}`, "robot");
             if(intention === "others") {
                 const randomOthers = [`ขอโทษค่ะ พอดีช่วงนี้นอนหน่อย
                     เลยไม่ค่อยเข้าใจ ลองเปลี่ยนคำนะคะ`, `คือยังไงเหรอคะ ขออีกรอบค่ะ`, `แปลว่าอะไรเหรอคะ?`]
@@ -268,7 +268,6 @@ class ChatBox extends Component {
                     return this.onAddText("ขอโทษค่ะ ตอนนี้ไม่สามารถใส่ตำแหน่งปัจจุบันได้ กรุณาลองใหม่อีกครั้งค่ะ", "robot")
                 } 
             }
-            this.onAddText(`Detected intention: ${intention}`, "robot");
 
             // const response = await new Promise((res) => {
             //     setTimeout(() => {

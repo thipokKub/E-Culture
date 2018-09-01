@@ -1,31 +1,72 @@
 import React, { Component } from "react"
-import { compose } from "recompose"
+import { compose, withProps, lifecycle } from "recompose"
 import {
   withScriptjs,
   withGoogleMap,
   GoogleMap,
   Marker,
-  InfoWindow
+  InfoWindow,
+  DirectionsRenderer
 } from "react-google-maps"
 
-const MapWithAMarker = compose(withScriptjs, withGoogleMap)(props => {
+const google = window.google;
+
+const MapWithAMarker = compose(
+  withProps({
+      googleMapURL: "https://maps.googleapis.com/maps/api/js?key=AIzaSyDGdIFwgysQcG2IBTGPpwlrqWHCBSu6wvI",
+      loadingElement: <div style={{ height: `100%` }} />,
+      containerElement: <div style={{ height: `400px` }} />,
+      mapElement: <div style={{ height: '100vh' }} />,
+    }),
+    withScriptjs,
+    withGoogleMap,
+  lifecycle({
+    componentDidMount() {
+      if(this.props.isRoute) {
+        const DirectionsService = new google.maps.DirectionsService();
+        DirectionsService.route({
+          origin: new google.maps.LatLng(this.props.start.lat, this.props.start.lon),
+          destination: new google.maps.LatLng(this.props.dest.lat, this.props.dest.lon),
+          travelMode: google.maps.TravelMode.DRIVING,
+        }, (result, status) => {
+          if (status === google.maps.DirectionsStatus.OK) {
+            this.setState({
+              directions: result,
+            });
+            console.log(result)
+          } else {
+            console.error(`error fetching directions ${result}`);
+          }
+        });
+      }
+    }
+  }))(props => {
+  const isRoute = props.isRoute ? true : false;
   return (
     <GoogleMap defaultZoom={7.5} defaultCenter={{ lat: 18.4819, lng: 99.0098}}
       onClick={(e) => {
         props.onChangePos && props.onChangePos(e);
       }}
     >
-      {props.markers.map(marker => {
+      {
+        (isRoute) && (props.directions && <DirectionsRenderer directions={props.directions} />)
+      }
+      {(!isRoute) && props.markers.concat([{
+        id: "0",
+        latitude: props.currentPos.lat,
+        longitude: props.currentPos.lon,
+        name: "me"
+      }]).map(marker => {
         const onClick = props.onClick.bind(this, marker)
         // console.log(marker);
         return (
           <Marker
-            icon={{ url: props.isMe ? "http://maps.google.com/mapfiles/ms/icons/blue-dot.png" : "http://maps.google.com/mapfiles/ms/icons/red-dot.png"}}
+            icon={{ url: marker.name === "me" ? "http://maps.google.com/mapfiles/ms/icons/blue-dot.png" :"http://maps.google.com/mapfiles/ms/icons/red-dot.png"}}
             key={marker.id}
             onClick={onClick}
             position={{ lat: marker.latitude, lng: marker.longitude }}
           >
-            {props.selectedMarker.id === marker.id &&
+            {(props.selectedMarker.id === marker.id && marker.name !== "me") &&
               <InfoWindow>
                 <div>
                   {marker.name}
@@ -34,7 +75,6 @@ const MapWithAMarker = compose(withScriptjs, withGoogleMap)(props => {
                   <img alt="thumbnail" src="https://via.placeholder.com/100x100" />
                 </div>
               </InfoWindow>}
-            }
           </Marker>
         )
       })}
@@ -124,12 +164,13 @@ export default class ShelterMap extends Component {
 
     return (
       <div style={{ height: "100%", width: "100%"}}>
-        <button onClick={this.changeMarkers}>Toggle Markers</button>
-        <button onClick={this.getCurrentLocation}>Get myLocation</button>
+        <span>Recentering: </span>
         <button onClick={this.props.onToggleRecenter}>{this.props.isRecentering ? "ON" : "OFF"}</button>
         <MapWithAMarker
-          onChangePos={this.props.onChangePos}
+          onChangePos={(e) => {this.props.isRecentering && this.props.onChangePos(e)}}
+          onRouting={(e) => {}}
           selectedMarker={this.state.selectedMarker}
+          currentPos={this.props.currentPos}
           markers={data}
           onClick={this.handleClick}
           googleMapURL="https://maps.googleapis.com/maps/api/js?key=AIzaSyDGdIFwgysQcG2IBTGPpwlrqWHCBSu6wvI&v=3.exp&libraries=geometry,drawing,places"

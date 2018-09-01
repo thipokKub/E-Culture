@@ -152,7 +152,6 @@ class ListDescription extends Component {
     render() {
         const { listItem } = this.props;
         const selectedItem = listItem[this.state.index];
-        console.log(listItem)
 
         return (
             <ListDescriptionStyled>
