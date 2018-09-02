@@ -7,9 +7,16 @@ const colorTemplate = {
     "clickable": "#29BBFF"
 }
 
+const fontColorTemplate = {
+    "robot": "#FFF",
+    "me": "#000",
+    "clickable": "#FFF"
+}
+
 const BubbleStyled = styled.article`
     box-sizing: border-box;
     background-color: ${ props => props.bgColor};
+    color: ${ props => props.color};
     position: relative;
     width: calc(100% - 20px);
     word-wrap:break-word;
@@ -68,6 +75,7 @@ const Bubble = ({ speaker, text, clickable, ...props}) => {
         <BubbleStyled
             direction={speaker === "me" ? "left" : "right"}
             bgColor={colorTemplate[speaker]}
+            color={fontColorTemplate[speaker]}
             clickable={clickable}
             {...props}
         >

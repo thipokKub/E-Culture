@@ -305,7 +305,7 @@ class ChatBox extends Component {
             // this.onAddText(`${response.message}`, "robot", true, response.data)
         } catch (e) {
             console.error(e)
-            this.onAddText("ขอโทษค่ะ ตอนนี้ไม่สามารถต่อกับเซิฟเวอร์ได้ กรุณาลองใหม่อีกครั้ง", "robot")
+            this.onAddText("ขอโทษค่ะ ตอนนี้ไม่สามารถต่อกับเซิฟเวอร์ได้ กรุณาลองใหม่อีกครั้งภายหลัง", "robot")
         }
     }
 
