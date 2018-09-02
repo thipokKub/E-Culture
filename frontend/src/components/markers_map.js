@@ -24,7 +24,7 @@ const Btn = styled.div`
   box-shadow: 0px 5px 7px rgba(0, 0, 0, 0.25);
   border: 1px solid rgba(0, 0, 0, 0.1);
   box-sizing: border-box;
-  ${props => !props.isOn ? "background-color: #FF4039;" : "background-color: #90FC4A;"}
+  ${props => !props.isOn ? "background-color: #3A70A2; color: #FFF;" : "background-color: #98DAF9; color: #000"}
 
   &:hover {
     filter: brightness(0.9);
@@ -231,8 +231,8 @@ const MapWithAMarker = compose(
   const isRoute = props.isRoute ? true : false;
   return (
     <GoogleMap
-      defaultZoom={7.5}
-      defaultCenter={{ lat: 18.4819, lng: 99.0098}}
+      defaultZoom={8}
+      defaultCenter={{ lat: 14.0787, lng: 100.60318}}
       options={{ styles: styledMapType }}
       onClick={(e) => {
         props.onChangePos && props.onChangePos(e);

@@ -101,8 +101,7 @@ class ChatBox extends Component {
             text: "",
             history: [{
                 speaker: "robot",
-                text: `สวัสดีค่ะ ฉันชื่อ <insert name here>
-                ยินดีที่ได้รู้จักค่าาาา
+                text: `สวัสดีค่ะ ฉันชื่อ Blue Map ยินดีที่ได้รู้จักค่าาาา
                 ฉันเป็นบ๊อทที่สามารถสอบถามข้อมูลเกี่ยวกับสถานที่ landmark ต่างๆ ภายในประเทศไทยได้
                 ก็ขอฝากเนื้อฝากตัวด้วยนะคะ`,
             }],
@@ -135,7 +134,7 @@ class ChatBox extends Component {
 
         (async () => {
             try {
-                await _this.delayedFunc(() => _this.onAddText(`เออ ลืมบอกค่ะ`, "robot", false), 1000);
+                await _this.delayedFunc(() => _this.onAddText(`ขอโทษนะคะ ลืมบอกอะไรนิดนึง`, "robot", false), 1000);
                 await _this.delayedFunc(() => _this.onResponseHelp(), 2000);
             } catch (e) {
                 console.error(e);
@@ -326,7 +325,7 @@ class ChatBox extends Component {
         })
     }
 
-    onResponseHelp = (head =`ตอนนี้สามารถสอบถามเกี่ยวกับ`) => {
+    onResponseHelp = (head =`ตอนนี้ฉันสามารถสอบถามเกี่ยวกับ`) => {
         this.onAddText(`${head}
         1. แนะนำสถานที่ท่องเที่ยว
         2. ขอเส้นทางคร่าวๆ
