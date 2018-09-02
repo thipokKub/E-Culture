@@ -10,7 +10,7 @@ const colorTemplate = {
 const fontColorTemplate = {
     "robot": "#FFF",
     "me": "#000",
-    "clickable": "#FFF"
+    "clickable": "#343434"
 }
 
 const BubbleStyled = styled.article`

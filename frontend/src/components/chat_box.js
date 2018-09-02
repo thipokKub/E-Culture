@@ -6,7 +6,8 @@ import TextareaAutosize from 'react-autosize-textarea';
 import axios from 'axios';
 
 const { ModalStore, types, ModalTypes } = ModalHelper;
-const TARGET_URL = `http://172.20.10.2:5000/api`
+// const TARGET_URL = `http://172.20.10.2:5000/api`
+const TARGET_URL = `http://192.168.43.170:5000/api`
 
 const minRows = 2;
 const magicNumber = 50; // This number is the final textarea height after "reset" -> set button height
@@ -329,7 +330,7 @@ class ChatBox extends Component {
     onResponseHelp = (head =`ตอนนี้ฉันสามารถสอบถามเกี่ยวกับ`) => {
         this.onAddText(`${head}
         1. แนะนำสถานที่ท่องเที่ยว
-        2. ขอเส้นทางคร่าวๆ
+        2. ค้นหาสถาที่ท่องเที่ยวตามคำอธิบาย
         3. ขอรายละเอียดเพิ่มเติมเกี่ยวกับสถานที่ต่างๆ
         ส่วนความสามารถอื่นๆจะตามมาทีหลังนะคะ`, "robot", false);
     }
