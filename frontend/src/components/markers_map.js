@@ -258,15 +258,23 @@ const MapWithAMarker = compose(
             {(props.selectedMarker.id === marker.id && marker.name !== "me") &&
               <InfoWindow>
                 <div>
-                  <h3>{marker.name}</h3>
+                  <h3
+                    style={{
+                      margin: 0,
+                      backgroundColor: '#288DBB',
+                      color: '#FFF',
+                      boxSizing: 'border-box',
+                      paddingLeft: '10px',
+                      fontSize: '1.2rem'
+                    }}
+                  >{marker.name}</h3>
                   <hr />
                   <div style={{ display: 'flex'}}>
                     <img alt="thumbnail" src={marker.media[0].thumb_pic} width={90} height={90}/>
                     <div style={{ padding: '0px 0px 0px 10px', position: 'relative', display: 'flex', flexDirection: 'column', justifyContent: 'center', width: '125px', height: '90px'}}>
                       <span><b>จังหวัด</b>&nbsp;{marker.province}<br /></span>
                       <span><b>อำเภอ</b>&nbsp;{marker.amphoe}<br /></span>
-                      <span><b>ตำบล</b>&nbsp;{marker.tambon}<br /><br /></span>
-                      <span><b>ระยะทาง</b>&nbsp;{Math.round(100*marker.dist)/100}&nbsp;กม.</span>
+                      <span><b>ตำบล</b>&nbsp;{marker.tambon}<br /></span>
                     </div>
                   </div>
                 </div>
@@ -361,12 +369,16 @@ export default class ShelterMap extends Component {
 
     return (
       <div style={{ height: "100%", width: "100%", position: 'relative'}}>
-        <Btn
-          onClick={this.props.onToggleRecenter}
-          isOn={this.props.isRecentering}
-        >
-          {this.props.isRecentering ? "ON" : "OFF"}
-        </Btn>
+        {
+          this.props.currentPos.lat !== -1 && (
+            <Btn
+              onClick={this.props.onToggleRecenter}
+              isOn={this.props.isRecentering}
+            >
+              {this.props.isRecentering ? "ON" : "OFF"}
+            </Btn>
+          )
+        }
         <MapWithAMarker
           onChangePos={(e) => {this.props.isRecentering && this.props.onChangePos(e)}}
           onRouting={(e) => {}}

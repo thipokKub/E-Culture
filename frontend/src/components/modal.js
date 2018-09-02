@@ -125,6 +125,8 @@ const ListDescriptionStyled = styled.section`
 
                 &.active {
                     border-right: none;
+                    background-color: #288DBB;
+                    color: #FFF;
                 }
 
                 img {
@@ -151,6 +153,16 @@ const ListDescriptionStyled = styled.section`
         flex-direction: column;
         justify-content: center;
     } */
+`
+
+const Overlay = styled.div`
+    &:hover {
+        filter: brightness(0.9);
+    }
+
+    &:active {
+        filter: brightness(0.8);
+    }
 `
 
 class ListDescription extends Component {
@@ -187,7 +199,17 @@ class ListDescription extends Component {
                 </div>
                 <div className="col grow">
                     <section className="info">
-                        <h2>{selectedItem.title}</h2>
+                        <div style={{
+                            backgroundColor: '#208CBD',
+                            color: '#FFF',
+                            paddingTop: '20px',
+                            paddingBottom: '10px',
+                            paddingLeft: '10px',
+                            boxSizing: 'border-box',
+                            marginBottom: '10px'
+                        }}>
+                            <h2 style={{ margin: 0}}>{selectedItem.title}</h2>
+                        </div>
                         <div style={{display: 'flex',flexWrap: 'wrap',justifyContent: 'space-around',overflow: 'hidden',}}>
                             <GridList style={{flexWrap: 'nowrap', transform: 'translateZ(0)',}}>
                                 {selectedItem.media.map((media,idx)=>{
@@ -221,7 +243,9 @@ class ListDescription extends Component {
                         <div style={{display:'flex'}}>
                             {selectedItem.category.map((cat,idx)=>{
                                 return(
-                                    <Chip key={"cat"+idx} label={cat}/>
+                                    <Overlay key={`cat-${idx}`}>
+                                        <Chip label={cat} />
+                                    </Overlay>
                                 )
                             })}
                         </div>
@@ -244,8 +268,8 @@ const Modal = (props) => {
                         <CrossBar
                             style={{
                                 position: 'absolute',
-                                right: '10px',
-                                top: '10px'
+                                right: '30px',
+                                top: '40px'
                             }}
                             onClick={Toggle}
                         />

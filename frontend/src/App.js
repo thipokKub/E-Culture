@@ -47,7 +47,7 @@ const Masked = styled.div`
   background-color: rgba(0, 0, 0, 0.3);
   top: 0;
   left: 0;
-  z-index: 1000;
+  z-index: 2000;
 `
 
 const Banner = styled.nav`
@@ -58,7 +58,7 @@ const Banner = styled.nav`
   justify-content: center;
   align-items: center;
   position: relative;
-  z-index: 2000;
+  z-index: 1500;
   box-shadow: 5px 0px 10px rgba(0, 0, 0, 0.3);
 
   span {
@@ -178,6 +178,11 @@ class App extends Component {
             />
           </section>
         </Layout>,
+
+        // <Masked key="tutorial" style={{color: '#FFF', fontSize: '4rem'}}>
+        //   <div style={{ width: '30vw', height: '100vh', display: 'flex', justifyContent: 'center', alignItems: 'center'}}>คุยตรงนี้</div>
+        //   <div style={{ width: '70vw', height: '100vh', display: 'flex', justifyContent: 'center', alignItems: 'center'}}>ดูตรงนี้</div>
+        // </Masked>,
         this.state.isOpen && (
           <Masked key="backdrop">
             <Modal

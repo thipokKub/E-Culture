@@ -9,7 +9,7 @@ const { ModalStore, types, ModalTypes } = ModalHelper;
 const TARGET_URL = `http://172.20.10.2:5000/api`
 
 const minRows = 2;
-const magicNumber = 46; // This number is the final textarea height after "reset" -> set button height
+const magicNumber = 50; // This number is the final textarea height after "reset" -> set button height
 
 const exampleObj = {
     "amphoe": "เถิน",
@@ -69,6 +69,7 @@ const ChatTextStyled = styled.section`
         padding: 7px;
     }
     button {
+        font-size: 1rem;
         min-width: 50px;
         box-sizing: border-box;
         min-height: 30px;
@@ -212,7 +213,7 @@ class ChatBox extends Component {
             })).data
 
             const intention = resp.intent;
-            this.onAddText(`Detected intention: ${intention}`, "robot");
+            // this.onAddText(`Detected intention: ${intention}`, "robot");
             if(intention === "others") {
                 const randomOthers = [`ขอโทษค่ะ พอดีช่วงนี้นอนหน่อย
                     เลยไม่ค่อยเข้าใจ ลองเปลี่ยนคำนะคะ`, `คือยังไงเหรอคะ ขออีกรอบค่ะ`, `แปลว่าอะไรเหรอคะ?`]
@@ -391,7 +392,8 @@ class ChatBox extends Component {
                         rows={minRows}
                         style={{
                             maxHeight: 50,
-                            boxSizing: 'border-box'
+                            boxSizing: 'border-box',
+                            fontSize: '1rem'
                         }}
                         id="Chat-TextArea"
                         innerRef={me => this._textArea = me}

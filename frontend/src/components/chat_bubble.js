@@ -4,7 +4,7 @@ import styled from 'styled-components';
 const colorTemplate = {
     "robot": "#158BBF",
     "me": "#4DB9DC",
-    "clickable": "#5ECCE9"
+    "clickable": "#29BBFF"
 }
 
 const BubbleStyled = styled.article`
@@ -12,6 +12,7 @@ const BubbleStyled = styled.article`
     background-color: ${ props => props.bgColor};
     position: relative;
     width: calc(100% - 20px);
+    word-wrap:break-word;
     ${props => {
         if (props.direction === "left") return `transform: translateX(20px);
         border-radius: 0px 5px 5px 5px;`
