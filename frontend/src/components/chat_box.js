@@ -135,7 +135,7 @@ class ChatBox extends Component {
 
         (async () => {
             try {
-                await _this.delayedFunc(() => _this.onAddText(`ขอโทษนะคะ ลืมบอกอะไรนิดนึง`, "robot", false), 1000);
+                await _this.delayedFunc(() => _this.onAddText(`ขอโทษนะคะ ลืมบอกอะไรนิดนึง`, "robot", false), 2000);
                 await _this.delayedFunc(() => _this.onResponseHelp(), 2000);
             } catch (e) {
                 console.error(e);

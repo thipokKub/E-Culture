@@ -16,7 +16,7 @@ const Btn = styled.div`
   height: 50px;
   position: absolute;
   top: 6px;
-  left: 190px;
+  right: 60px;
   display: flex;
   justify-content: center;
   align-items: center;
@@ -238,6 +238,7 @@ const MapWithAMarker = compose(
         props.onChangePos && props.onChangePos(e);
       }}
     >
+      { props.toggleBtn }
       {
         (isRoute) && (props.directions && <DirectionsRenderer directions={props.directions} />)
       }
@@ -369,21 +370,21 @@ export default class ShelterMap extends Component {
 
     return (
       <div style={{ height: "100%", width: "100%", position: 'relative'}}>
-        {
-          this.props.currentPos.lat !== -1 && (
-            <Btn
-              onClick={this.props.onToggleRecenter}
-              isOn={this.props.isRecentering}
-            >
-              {this.props.isRecentering ? "ON" : "OFF"}
-            </Btn>
-          )
-        }
         <MapWithAMarker
           onChangePos={(e) => {this.props.isRecentering && this.props.onChangePos(e)}}
           onRouting={(e) => {}}
           selectedMarker={this.state.selectedMarker}
           currentPos={this.props.currentPos}
+          toggleBtn={
+            this.props.currentPos.lat !== -1 && (
+              <Btn
+                onClick={this.props.onToggleRecenter}
+                isOn={this.props.isRecentering}
+              >
+                {this.props.isRecentering ? "ON" : "OFF"}
+              </Btn>
+            )
+          }
           markers={data}
           onClick={this.handleClick}
           googleMapURL="https://maps.googleapis.com/maps/api/js?key=AIzaSyDGdIFwgysQcG2IBTGPpwlrqWHCBSu6wvI&v=3.exp&libraries=geometry,drawing,places"

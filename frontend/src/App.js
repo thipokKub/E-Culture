@@ -50,6 +50,34 @@ const Masked = styled.div`
   z-index: 2000;
 `
 
+const SplashScreen = styled.section`
+  @keyframes fadeOut {
+      0%   {opacity: 1}
+      100% {opacity: 0}
+  }
+
+  background-image: linear-gradient(to bottom right, #F1F4FB, #4BB0E7);
+  width: 100vw;
+  height: 100vh;
+
+  position: fixed;
+  z-index: 3000;
+  top: 0;
+  left: 0;
+
+  display: flex;
+  justify-content: center;
+  align-items: center;
+
+  animation: fadeOut 1s ease-in 0.3s;
+
+  span {
+    padding-left: 10px;
+    color: #0F455E;
+    font-size: 3rem;
+  }
+`
+
 const Banner = styled.nav`
   font-family: Kanit !important;
   height: 60px;
@@ -88,11 +116,17 @@ class App extends Component {
       pointB: {
         lat: -1,
         lon: -1
-      }
+      },
+      isShowSplah: true
     };
     ModalStore.subscribe(() => {
       this.setState({ ...ModalStore.getState() })
     })
+    setTimeout(() => {
+      this.setState({
+        isShowSplah: false
+      })
+    }, 1500);
   }
 
   componentDidMount() {
@@ -179,10 +213,17 @@ class App extends Component {
           </section>
         </Layout>,
 
+        this.state.isShowSplah && (
+        <SplashScreen key="Splash">
+          <img src={Icon} alt="logo" width={120} height={120} />
+          <span>Blue Map</span>
+        </SplashScreen>),
+
         // <Masked key="tutorial" style={{color: '#FFF', fontSize: '4rem'}}>
         //   <div style={{ width: '30vw', height: '100vh', display: 'flex', justifyContent: 'center', alignItems: 'center'}}>คุยตรงนี้</div>
         //   <div style={{ width: '70vw', height: '100vh', display: 'flex', justifyContent: 'center', alignItems: 'center'}}>ดูตรงนี้</div>
         // </Masked>,
+
         this.state.isOpen && (
           <Masked key="backdrop">
             <Modal
