@@ -9,6 +9,7 @@ import styled from 'styled-components';
 import ModalHelper from './helpers/modal-helper';
 import Modal from './components/modal';
 import { DirectionsRenderer } from 'react-google-maps';
+import Icon from './icon2.png';
 
 const { ModalStore } = ModalHelper;
 
@@ -50,11 +51,21 @@ const Masked = styled.div`
 `
 
 const Banner = styled.nav`
+  font-family: Kanit !important;
   height: 60px;
-  background-color: #666;
+  background-color: #6ED1F4;
   display: flex;
   justify-content: center;
   align-items: center;
+  position: relative;
+  z-index: 2000;
+  box-shadow: 5px 0px 10px rgba(0, 0, 0, 0.3);
+
+  span {
+    padding-left: 10px;
+    color: #0F455E;
+    font-size: 1.5rem;
+  }
 `
 
 class App extends Component {
@@ -144,7 +155,8 @@ class App extends Component {
     return (
       [
         <Banner key="Banner">
-          <span>Title</span>
+          <img src={Icon} alt="logo" width={60} height={60} />
+          <span>Blue Map</span>
         </Banner>,
         <Layout key="layout" scollable={this.state.isOpem}>
           <ChatBox

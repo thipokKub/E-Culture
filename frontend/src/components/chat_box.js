@@ -9,7 +9,7 @@ const { ModalStore, types, ModalTypes } = ModalHelper;
 const TARGET_URL = `http://172.20.10.2:5000/api`
 
 const minRows = 2;
-const magicNumber = 41; // This number is the final textarea height after "reset" -> set button height
+const magicNumber = 46; // This number is the final textarea height after "reset" -> set button height
 
 const exampleObj = {
     "amphoe": "เถิน",
@@ -43,8 +43,6 @@ const ChatBoxStyled = styled.section`
     position: relative;
     z-index: 990;
     overflow-y: scroll;
-    background-image: url('https://www.xmple.com/wallpaper/black-graph-paper-white-grid-3200x1800-c2-fffaf0-000000-l2-10-160-a-0-f-20.svg');
-    background-size: contain;
     
     #Scroll-Chat {
         display: flex;
@@ -78,7 +76,7 @@ const ChatTextStyled = styled.section`
         width: 50px;
         max-width: 50px;
         border: none;
-        background-color: #216EE9;
+        background-color: #10759E;
         color: #FFF;
         height: 100%;
         outline: none;
@@ -367,7 +365,7 @@ class ChatBox extends Component {
                     display: 'flex',
                     justifyContent: 'center',
                     position: 'relative',
-                    backgroundColor: '#F1FAEE'
+                    backgroundImage: 'linear-gradient(to bottom right, #F1F4FB, #4BB0E7)'
                 }}
             >
                 <ChatBoxStyled>

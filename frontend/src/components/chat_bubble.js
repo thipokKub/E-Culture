@@ -2,8 +2,8 @@ import React from 'react';
 import styled from 'styled-components';
 
 const colorTemplate = {
-    "robot": "#1DAFEC",
-    "me": "#9ABF55",
+    "robot": "#158BBF",
+    "me": "#4DB9DC",
     "clickable": "#5ECCE9"
 }
 

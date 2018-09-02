@@ -21,18 +21,183 @@ const Btn = styled.div`
   justify-content: center;
   align-items: center;
   z-index: 800;
-  ${props =>! props.isOn ? "background-color: #FF4039;" : "background-color: #6BFF6E;"}
+  box-shadow: 0px 5px 7px rgba(0, 0, 0, 0.25);
+  border: 1px solid rgba(0, 0, 0, 0.1);
+  box-sizing: border-box;
+  ${props => !props.isOn ? "background-color: #FF4039;" : "background-color: #90FC4A;"}
 
   &:hover {
     filter: brightness(0.9);
+    box-shadow: 0px 3px 3px rgba(0, 0, 0, 0.25);
   }
 
   &:active {
     filter: brightness(0.8);
+    box-shadow: none;
   }
 `
 
 const google = window.google;
+
+const styledMapType = [
+  {
+    "featureType": "all",
+    "elementType": "geometry",
+    "stylers": [
+      {
+        "visibility": "on"
+      },
+      {
+        "weight": "1.00"
+      },
+      {
+        "color": "#a1d8ff"
+      }
+    ]
+  },
+  {
+    "featureType": "all",
+    "elementType": "geometry.fill",
+    "stylers": [
+      {
+        "visibility": "on"
+      },
+      {
+        "color": "#f3faff"
+      }
+    ]
+  },
+  {
+    "featureType": "all",
+    "elementType": "labels.text.fill",
+    "stylers": [
+      {
+        "gamma": "0.01"
+      },
+      {
+        "lightness": "0"
+      },
+      {
+        "color": "#3a6279"
+      }
+    ]
+  },
+  {
+    "featureType": "all",
+    "elementType": "labels.text.stroke",
+    "stylers": [
+      {
+        "saturation": -31
+      },
+      {
+        "lightness": -33
+      },
+      {
+        "weight": "0.20"
+      },
+      {
+        "gamma": 0.8
+      },
+      {
+        "visibility": "on"
+      },
+      {
+        "color": "#000000"
+      }
+    ]
+  },
+  {
+    "featureType": "all",
+    "elementType": "labels.icon",
+    "stylers": [
+      {
+        "visibility": "simplified"
+      }
+    ]
+  },
+  {
+    "featureType": "landscape",
+    "elementType": "geometry",
+    "stylers": [
+      {
+        "lightness": 30
+      },
+      {
+        "saturation": 30
+      }
+    ]
+  },
+  {
+    "featureType": "poi",
+    "elementType": "geometry",
+    "stylers": [
+      {
+        "saturation": 20
+      }
+    ]
+  },
+  {
+    "featureType": "poi.park",
+    "elementType": "geometry",
+    "stylers": [
+      {
+        "lightness": 20
+      },
+      {
+        "saturation": -20
+      }
+    ]
+  },
+  {
+    "featureType": "road",
+    "elementType": "geometry",
+    "stylers": [
+      {
+        "lightness": 10
+      },
+      {
+        "saturation": -30
+      },
+      {
+        "visibility": "off"
+      },
+      {
+        "color": "#b8d4e4"
+      }
+    ]
+  },
+  {
+    "featureType": "road",
+    "elementType": "geometry.fill",
+    "stylers": [
+      {
+        "visibility": "on"
+      }
+    ]
+  },
+  {
+    "featureType": "road",
+    "elementType": "geometry.stroke",
+    "stylers": [
+      {
+        "color": "#6fb6e0"
+      },
+      {
+        "weight": "0.39"
+      }
+    ]
+  },
+  {
+    "featureType": "water",
+    "elementType": "all",
+    "stylers": [
+      {
+        "lightness": -20
+      }
+    ]
+  }
+]
+
 const MapWithAMarker = compose(
   withProps({
       googleMapURL: "https://maps.googleapis.com/maps/api/js?key=AIzaSyDGdIFwgysQcG2IBTGPpwlrqWHCBSu6wvI",
@@ -65,7 +230,10 @@ const MapWithAMarker = compose(
   }))(props => {
   const isRoute = props.isRoute ? true : false;
   return (
-    <GoogleMap defaultZoom={7.5} defaultCenter={{ lat: 18.4819, lng: 99.0098}}
+    <GoogleMap
+      defaultZoom={7.5}
+      defaultCenter={{ lat: 18.4819, lng: 99.0098}}
+      options={{ styles: styledMapType }}
       onClick={(e) => {
         props.onChangePos && props.onChangePos(e);
       }}
